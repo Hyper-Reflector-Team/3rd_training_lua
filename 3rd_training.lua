@@ -50,7 +50,6 @@ And also having throw as an option there as well so you have one less option to 
 -- Includes
 require("src/tools")
 require("src/memory_adresses")
-require("src/draw")
 require("src/display")
 require("src/menu_widgets")
 require("src/framedata")
@@ -59,7 +58,10 @@ require("src/input_history")
 -- refactored require("src/attack_data")
 require("src/frame_advantage")
 require("src/character_select")
-local attack_data = require("src/utils/attack_data")
+-- utils, these do not directly display, typically shared functionality consumed by modules.
+local util_draw = require("src/utils/draw")
+-- modules, these display something on the screen and may consume utils
+local module_attack_data = require("src/modules/attack_data")
 
 recording_slot_count = 8
 
@@ -2228,7 +2230,7 @@ end
 
 function on_load_state()
   reset_player_objects()
-  attack_data.attack_data_reset()
+  module_attack_data.attack_data_reset()
   frame_advantage_reset()
 
   gamestate_read()
@@ -2345,7 +2347,7 @@ function before_frame()
   end
 
   -- attack data
-  attack_data.attack_data_update(player, dummy)
+  module_attack_data.attack_data_update(player, dummy)
 
   -- frame advantage
   frame_advantage_update(player, dummy)
@@ -2376,7 +2378,7 @@ function before_frame()
     input_history_update(input_history[2], "P2", _input)
   else
     clear_input_history()
-    attack_data.attack_data_reset()
+    module_attack_data.attack_data_reset()
     frame_advantage_reset()
   end
 
@@ -2521,7 +2523,7 @@ function on_gui()
     -- attack data
     -- do not show if special training not following character is on, otherwise it will overlap
     if training_settings.display_attack_data and (training_settings.special_training_current_mode == 1 or training_settings.special_training_follow_character) then
-      attack_data.attack_data_display()
+      module_attack_data.attack_data_display()
     end
 
     -- move advantage

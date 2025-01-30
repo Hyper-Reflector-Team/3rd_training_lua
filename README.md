@@ -1,3 +1,7 @@
+### This is a refactoring project with potential to be used with a new online platform.
+## I will be updating this periodically.
+
+
 # 3rd_training_lua
 Training mode for Street Fighter III 3rd Strike (Japan 990512), on Fightcade v2.0.91
 
