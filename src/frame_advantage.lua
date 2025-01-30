@@ -1,3 +1,5 @@
+local util_draw = require("src/utils/draw")
+
 move_advantage = {}
 
 function frame_advantage_update(_attacker, _defender)
@@ -135,7 +137,7 @@ function frame_advantage_display()
     if move_advantage.player_id == 1 then
       _x = 51
     elseif move_advantage.player_id == 2 then
-      _x = screen_width - 65 - _text_width
+      _x = util_draw.screen_width - 65 - _text_width
     end
 
     gui.text(_x, _y, string.format(_text))

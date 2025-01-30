@@ -1,3 +1,5 @@
+local util_draw = require("src/utils/draw")
+
 -- # enums
 distance_display_mode =
 {
@@ -78,7 +80,7 @@ function display_draw_life(_player_object)
   if _player_object.id == 1 then
     _x = 13
   elseif _player_object.id == 2 then
-    _x = screen_width - 11 - get_text_width(_t)
+    _x = util_draw.screen_width - 11 - get_text_width(_t)
   end
 
   gui.text(_x, _y, _t, 0xFFFB63FF)
@@ -100,7 +102,7 @@ function display_draw_meter(_player_object)
   if _player_object.id == 1 then
     _x = 53
   elseif _player_object.id == 2 then
-    _x = screen_width - 51 - get_text_width(_t)
+    _x = util_draw.screen_width - 51 - get_text_width(_t)
   end
 
   gui.text(_x, _y, _t, 0x00FFCEFF, 0x001433FF)
@@ -116,7 +118,7 @@ function display_draw_stun_gauge(_player_object)
   if _player_object.id == 1 then
     _x = 118
   elseif _player_object.id == 2 then
-    _x = screen_width - 116 - get_text_width(_t)
+    _x = util_draw.screen_width - 116 - get_text_width(_t)
   end
 
   gui.text(_x, _y, _t, 0xE70000FF, 0x001433FF)
@@ -133,7 +135,7 @@ function display_draw_bonuses(_player_object)
     if _player_object.id == 1 then
       _x = 43
     elseif _player_object.id == 2 then
-      _x = screen_width - 40 - get_text_width(_t)
+      _x = util_draw.screen_width - 40 - get_text_width(_t)
     end
 
     gui.text(_x, _y, _t, 0xFF7184FF, 0x392031FF)
@@ -149,7 +151,7 @@ function display_draw_bonuses(_player_object)
     if _player_object.id == 1 then
       _x = 10
     elseif _player_object.id == 2 then
-      _x = screen_width - 7 - get_text_width(_t)
+      _x = util_draw.screen_width - 7 - get_text_width(_t)
     end
 
     gui.text(_x, _y, _t, 0xD6E3EFFF, 0x000029FF)
@@ -165,7 +167,7 @@ function display_draw_bonuses(_player_object)
     if _player_object.id == 1 then
       _x = 81
     elseif _player_object.id == 2 then
-      _x = screen_width - 79 - get_text_width(_t)
+      _x = util_draw.screen_width - 79 - get_text_width(_t)
     end
 
     gui.text(_x, _y, _t, 0xD6E3EFFF, 0x000029FF)

@@ -1,5 +1,6 @@
 -- @module attack_data - util
 -- this is used for displaying information such as damage, stun and combo count on screen.
+local util_draw = require("src/utils/draw")
 
 local attack_data = {}
 
@@ -58,7 +59,7 @@ local function attack_data_display()
   local _x_spacing = 80
 
   if attack_data.player_id == 1 then
-    local _base = screen_width - 138
+    local _base = util_draw.screen_width - 138
     x1 = _base - text_width1
     x2 = _base - text_width2
     x3 = _base - text_width3

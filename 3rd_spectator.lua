@@ -18,7 +18,8 @@ print("")
 
 require("src/tools")
 require("src/memory_adresses")
-require("src/draw")
+-- utils 
+local util_draw = require("src/utils/draw")
 require("src/display")
 require("src/framedata")
 require("src/gamestate")
@@ -101,7 +102,7 @@ end
 
 function before_frame()
 
-  draw_read()
+  util_draw.draw_read()
   gamestate_read()
 
   if developer_mode then
@@ -149,7 +150,7 @@ function on_gui()
   end
 
   if spectator_settings.display_input_history == 2 or spectator_settings.display_input_history == 4 then
-    input_history_draw(input_history[2], screen_width - 4, 49, true)
+    input_history_draw(input_history[2], util_draw.screen_width - 4, 49, true)
   end
 
   -- controllers

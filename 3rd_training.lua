@@ -60,6 +60,7 @@ require("src/frame_advantage")
 require("src/character_select")
 -- utils, these do not directly display, typically shared functionality consumed by modules.
 local util_draw = require("src/utils/draw")
+local image_tables = require("src/utils/image_tables")
 -- modules, these display something on the screen and may consume utils
 local module_attack_data = require("src/modules/attack_data")
 
@@ -2296,7 +2297,7 @@ function before_frame()
   counter_attack_delay_item.object = recording_slots[training_settings.current_recording_slot]
   counter_attack_random_deviation_item.object = recording_slots[training_settings.current_recording_slot]
 
-  draw_read()
+  util_draw.draw_read()
 
   -- gamestate
   local _previous_dummy_char_str = player_objects[2].char_str or ""
@@ -2572,8 +2573,8 @@ function on_gui()
     local _gauge_x_scale = 4
 
     if training_settings.special_training_follow_character then
-      local _px = _player.pos_x - screen_x + emu.screenwidth()/2
-      local _py = emu.screenheight() - (_player.pos_y - screen_y) - ground_offset
+      local _px = _player.pos_x - util_draw.screen_x + emu.screenwidth()/2
+      local _py = emu.screenheight() - (_player.pos_y - util_draw.screen_y) - ground_offset
       local _half_width = 23 * _gauge_x_scale * 0.5
       _x = _px - _half_width
       _x = math.max(_x, 4)
@@ -2677,8 +2678,8 @@ function on_gui()
     local _gauge_x_scale = 1
 
     if training_settings.special_training_follow_character then
-      local _px = _player.pos_x - screen_x + emu.screenwidth()/2
-      local _py = emu.screenheight() - (_player.pos_y - screen_y) - ground_offset
+      local _px = _player.pos_x - util_draw.screen_x + emu.screenwidth()/2
+      local _py = emu.screenheight() - (_player.pos_y - util_draw.screen_y) - ground_offset
       local _half_width = 23 * _gauge_x_scale * 0.5
       _x = _px - _half_width
       _x = math.max(_x, 4)
@@ -2775,8 +2776,8 @@ function on_gui()
     local _gauge_x_scale = 4
 
     if training_settings.special_training_follow_character then
-      local _px = _player.pos_x - screen_x + emu.screenwidth()/2
-      local _py = emu.screenheight() - (_player.pos_y - screen_y) - ground_offset
+      local _px = _player.pos_x - util_draw.screen_x + emu.screenwidth()/2
+      local _py = emu.screenheight() - (_player.pos_y - util_draw.screen_y) - ground_offset
       local _half_width = 23 * _gauge_x_scale * 0.5
       _x = _px - _half_width
       _x = math.max(_x, 4)
@@ -2797,19 +2798,19 @@ function on_gui()
 
       gui.text(_x -8, _y, "LK", text_default_color, text_default_border_color)
       for _i=1,_legs_object.l_legs_count,1 do
-        gui.image(_x + _x_offset, _y, img_LK_button_small)
+        gui.image(_x + _x_offset, _y, image_tables.img_button_small.img_LK_button_small)
         _x_offset = _x_offset + 8
       end
       _x_offset = _margin
       gui.text(_x -8, _y+8, "MK", text_default_color, text_default_border_color)
       for _i=1,_legs_object.m_legs_count,1 do
-        gui.image(_x + _x_offset, _y+8, img_MK_button_small)
+        gui.image(_x + _x_offset, _y+8, image_tables.img_button_small.img_MK_button_small)
         _x_offset = _x_offset + 8
       end
       _x_offset = _margin
       gui.text(_x -8, _y+16, "HK", text_default_color, text_default_border_color)
       for _i=1,_legs_object.h_legs_count,1 do
-        gui.image(_x + _x_offset, _y+16, img_HK_button_small)
+        gui.image(_x + _x_offset, _y+16, image_tables.img_button_small.img_HK_button_small)
         _x_offset = _x_offset + 8
       end
       _x_offset = _margin

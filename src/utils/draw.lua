@@ -1,72 +1,14 @@
-require "gd"
+local image_tables = require("src/utils/image_tables")
 
--- # Constants
-screen_width = 383
-screen_height = 223
-ground_offset = 23
+local SCREEN_WIDTH = 383
+local SCREEN_HEIGHT = 223
+local GROUND_OFFSET = 23
 
--- # Global variables
-screen_x = 0
-screen_y = 0
-scale = 1
+local screen_x = 0
+local screen_y = 0
+local scale = 1
 
--- # Images
-
-img_1_dir_big = gd.createFromPng("images/big/1_dir.png"):gdStr()
-img_2_dir_big = gd.createFromPng("images/big/2_dir.png"):gdStr()
-img_3_dir_big = gd.createFromPng("images/big/3_dir.png"):gdStr()
-img_4_dir_big = gd.createFromPng("images/big/4_dir.png"):gdStr()
-img_5_dir_big = gd.createFromPng("images/big/5_dir.png"):gdStr()
-img_6_dir_big = gd.createFromPng("images/big/6_dir.png"):gdStr()
-img_7_dir_big = gd.createFromPng("images/big/7_dir.png"):gdStr()
-img_8_dir_big = gd.createFromPng("images/big/8_dir.png"):gdStr()
-img_9_dir_big = gd.createFromPng("images/big/9_dir.png"):gdStr()
-img_no_button_big = gd.createFromPng("images/big/no_button.png"):gdStr()
-img_L_button_big = gd.createFromPng("images/big/L_button.png"):gdStr()
-img_M_button_big = gd.createFromPng("images/big/M_button.png"):gdStr()
-img_H_button_big = gd.createFromPng("images/big/H_button.png"):gdStr()
-img_dir_big = {
-  img_1_dir_big,
-  img_2_dir_big,
-  img_3_dir_big,
-  img_4_dir_big,
-  img_5_dir_big,
-  img_6_dir_big,
-  img_7_dir_big,
-  img_8_dir_big,
-  img_9_dir_big
-}
-
-img_1_dir_small = gd.createFromPng("images/small/1_dir.png"):gdStr()
-img_2_dir_small = gd.createFromPng("images/small/2_dir.png"):gdStr()
-img_3_dir_small = gd.createFromPng("images/small/3_dir.png"):gdStr()
-img_4_dir_small = gd.createFromPng("images/small/4_dir.png"):gdStr()
-img_5_dir_small = gd.createFromPng("images/small/5_dir.png"):gdStr()
-img_6_dir_small = gd.createFromPng("images/small/6_dir.png"):gdStr()
-img_7_dir_small = gd.createFromPng("images/small/7_dir.png"):gdStr()
-img_8_dir_small = gd.createFromPng("images/small/8_dir.png"):gdStr()
-img_9_dir_small = gd.createFromPng("images/small/9_dir.png"):gdStr()
-img_LP_button_small = gd.createFromPng("images/small/LP_button.png"):gdStr()
-img_MP_button_small = gd.createFromPng("images/small/MP_button.png"):gdStr()
-img_HP_button_small = gd.createFromPng("images/small/HP_button.png"):gdStr()
-img_LK_button_small = gd.createFromPng("images/small/LK_button.png"):gdStr()
-img_MK_button_small = gd.createFromPng("images/small/MK_button.png"):gdStr()
-img_HK_button_small = gd.createFromPng("images/small/HK_button.png"):gdStr()
-img_dir_small = {
-  img_1_dir_small,
-  img_2_dir_small,
-  img_3_dir_small,
-  img_4_dir_small,
-  img_5_dir_small,
-  img_6_dir_small,
-  img_7_dir_small,
-  img_8_dir_small,
-  img_9_dir_small
-}
-
--- # System
-
-function draw_read()
+local function draw_read()
   -- screen stuff
   screen_x = memory.readwordsigned(0x02026CB0)
   screen_y = memory.readwordsigned(0x02026CB4)
@@ -150,20 +92,21 @@ end
 
 -- draws a controller representation
 function draw_controller_big(_entry, _x, _y)
-  gui.image(_x, _y, img_dir_big[_entry.direction])
+  gui.image(_x, _y, image_tables.img_dir_big[_entry.direction])
 
-  local _img_LP = img_no_button_big
-  local _img_MP = img_no_button_big
-  local _img_HP = img_no_button_big
-  local _img_LK = img_no_button_big
-  local _img_MK = img_no_button_big
-  local _img_HK = img_no_button_big
-  if _entry.buttons[1] then _img_LP = img_L_button_big end
-  if _entry.buttons[2] then _img_MP = img_M_button_big end
-  if _entry.buttons[3] then _img_HP = img_H_button_big end
-  if _entry.buttons[4] then _img_LK = img_L_button_big end
-  if _entry.buttons[5] then _img_MK = img_M_button_big end
-  if _entry.buttons[6] then _img_HK = img_H_button_big end
+  local _img_LP = image_tables.img_button_big.img_no_button_big
+  local _img_MP = image_tables.img_button_big.img_no_button_big
+  local _img_HP = image_tables.img_button_big.img_no_button_big
+  local _img_LK = image_tables.img_button_big.img_no_button_big
+  local _img_MK = image_tables.img_button_big.img_no_button_big
+  local _img_HK = image_tables.img_button_big.img_no_button_big
+
+  if _entry.buttons[1] then _img_LP = image_tables.img_button_big.img_L_button_big end
+  if _entry.buttons[2] then _img_MP = image_tables.img_button_big.img_M_button_big end
+  if _entry.buttons[3] then _img_HP = image_tables.img_button_big.img_H_button_big end
+  if _entry.buttons[4] then _img_LK = image_tables.img_button_big.img_L_button_big end
+  if _entry.buttons[5] then _img_MK = image_tables.img_button_big.img_M_button_big end
+  if _entry.buttons[6] then _img_HK = image_tables.img_button_big.img_H_button_big end
 
   gui.image(_x + 13, _y, _img_LP)
   gui.image(_x + 18, _y, _img_MP)
@@ -182,7 +125,7 @@ function draw_controller_small(_entry, _x, _y, _is_right)
     _sign = -1
   end
 
-  gui.image(_x + _x_offset, _y, img_dir_small[_entry.direction])
+  gui.image(_x + _x_offset, _y, image_tables.img_dir_small[_entry.direction])
   _x_offset = _x_offset + _sign * 2
 
 
@@ -190,32 +133,32 @@ function draw_controller_small(_entry, _x, _y, _is_right)
   _x_offset = _x_offset + _sign * _interval
 
   if _entry.buttons[1] then
-    gui.image(_x + _x_offset, _y, img_LP_button_small)
+    gui.image(_x + _x_offset, _y, image_tables.img_button_small.img_LP_button_small)
     _x_offset = _x_offset + _sign * _interval
   end
 
   if _entry.buttons[2] then
-    gui.image(_x + _x_offset, _y, img_MP_button_small)
+    gui.image(_x + _x_offset, _y, image_tables.img_button_small.img_MP_button_small)
     _x_offset = _x_offset + _sign * _interval
   end
 
   if _entry.buttons[3] then
-    gui.image(_x + _x_offset, _y, img_HP_button_small)
+    gui.image(_x + _x_offset, _y, image_tables.img_button_small.img_HP_button_small)
     _x_offset = _x_offset + _sign * _interval
   end
 
   if _entry.buttons[4] then
-    gui.image(_x + _x_offset, _y, img_LK_button_small)
+    gui.image(_x + _x_offset, _y, image_tables.img_button_small.img_LK_button_small)
     _x_offset = _x_offset + _sign * _interval
   end
 
   if _entry.buttons[5] then
-    gui.image(_x + _x_offset, _y, img_MK_button_small)
+    gui.image(_x + _x_offset, _y, image_tables.img_button_small.img_MK_button_small)
     _x_offset = _x_offset + _sign * _interval
   end
 
   if _entry.buttons[6] then
-    gui.image(_x + _x_offset, _y, img_HK_button_small)
+    gui.image(_x + _x_offset, _y, image_tables.img_button_small.img_HK_button_small)
     _x_offset = _x_offset + _sign * _interval
   end
 
@@ -257,3 +200,14 @@ function draw_vertical_line(_x, _y_start, _y_end, _color, _thickness)
   local _t = _y_start - 1
   gui.box(_l, _b, _r, _t, _color, 0x00000000)
 end
+
+
+return {
+  screen_width = SCREEN_WIDTH,
+  screen_height = SCREEN_HEIGHT,
+  ground_offset = GROUND_OFFSET,
+  screen_x = screen_x,
+  screen_y = screen_y,
+  scale = scale,
+  draw_read = draw_read,
+}
