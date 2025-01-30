@@ -41,12 +41,12 @@ local function attack_data_update(attacker, defender)
 end
 
 local function attack_data_display()
-  local text_width1 = get_text_width("damage: ")
-  local text_width2 = get_text_width("stun: ")
-  local text_width3 = get_text_width("combo: ")
-  local text_width4 = get_text_width("total damage: ")
-  local text_width5 = get_text_width("total stun: ")
-  local text_width6 = get_text_width("max combo: ")
+  local text_width1 = util_draw.get_text_width("damage: ")
+  local text_width2 = util_draw.get_text_width("stun: ")
+  local text_width3 = util_draw.get_text_width("combo: ")
+  local text_width4 = util_draw.get_text_width("total damage: ")
+  local text_width5 = util_draw.get_text_width("total stun: ")
+  local text_width6 = util_draw.get_text_width("max combo: ")
 
   local x1 = 0
   local x2 = 0

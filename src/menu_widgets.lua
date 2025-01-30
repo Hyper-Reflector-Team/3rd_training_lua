@@ -1,3 +1,5 @@
+local util_draw = require("src/utils/draw")
+
 text_default_color = 0xF7FFF7FF
 text_default_border_color = 0x101008FF
 text_selected_color = 0xFF0000FF
@@ -29,11 +31,11 @@ function gauge_menu_item(_name, _object, _property_name, _unit, _fill_color, _ga
       _prefix = "< "
       _suffix = " >"
     end
-    gui.text(_x, _y, _prefix..self.name.." : ", _c, text_default_border_color)
+    gui.text(_x, _y, _prefix .. self.name .. " : ", _c, text_default_border_color)
 
     local _box_width = self.gauge_max / self.unit
     local _box_top = _y + 1
-    local _box_left = _x + get_text_width("< "..self.name.." : ") - 1
+    local _box_left = _x + util_draw.get_text_width("< " .. self.name .. " : ") - 1
     local _box_right = _box_left + _box_width
     local _box_bottom = _box_top + 4
     gui.box(_box_left, _box_top, _box_right, _box_bottom, text_default_color, text_default_border_color)
@@ -123,7 +125,7 @@ function textfield_menu_item(_name, _object, _property_name, _default_value, _ma
   function _o:sync_to_var()
     local _str = ""
     for i = 1, #self.content do
-      _str = _str..available_characters[self.content[i]]
+      _str = _str .. available_characters[self.content[i]]
     end
     self.object[self.property_name] = _str
   end
@@ -131,7 +133,7 @@ function textfield_menu_item(_name, _object, _property_name, _default_value, _ma
   function _o:sync_from_var()
     self.content = {}
     for i = 1, #self.object[self.property_name] do
-      local _c = self.object[self.property_name]:sub(i,i)
+      local _c = self.object[self.property_name]:sub(i, i)
       for j = 1, #available_characters do
         if available_characters[j] == _c then
           table.insert(self.content, j)
@@ -163,7 +165,7 @@ function textfield_menu_item(_name, _object, _property_name, _default_value, _ma
     local _prefix = ""
     local _suffix = ""
     if self.is_in_edition then
-      _c =  0xFFFF00FF
+      _c = 0xFFFF00FF
     elseif _selected then
       _c = text_selected_color
     end
@@ -177,7 +179,7 @@ function textfield_menu_item(_name, _object, _property_name, _default_value, _ma
       end
     end
 
-    gui.text(_x, _y, _prefix..self.name.." : ".._value.._suffix, _c, text_default_border_color)
+    gui.text(_x, _y, _prefix .. self.name .. " : " .. _value .. _suffix, _c, text_default_border_color)
   end
 
   function _o:left()
@@ -296,7 +298,7 @@ function checkbox_menu_item(_name, _object, _property_name, _default_value)
     else
       _value = "no"
     end
-    gui.text(_x, _y, _prefix..self.name.." : ".._value.._suffix, _c, text_default_border_color)
+    gui.text(_x, _y, _prefix .. self.name .. " : " .. _value .. _suffix, _c, text_default_border_color)
   end
 
   function _o:left()
@@ -336,7 +338,8 @@ function list_menu_item(_name, _object, _property_name, _list, _default_value)
       _prefix = "< "
       _suffix = " >"
     end
-    gui.text(_x, _y, _prefix..self.name.." : "..tostring(self.list[self.object[self.property_name]]).._suffix, _c, text_default_border_color)
+    gui.text(_x, _y, _prefix .. self.name .. " : " .. tostring(self.list[self.object[self.property_name]]) .. _suffix, _c,
+      text_default_border_color)
   end
 
   function _o:left()
@@ -385,7 +388,8 @@ function integer_menu_item(_name, _object, _property_name, _min, _max, _loop, _d
       _prefix = "< "
       _suffix = " >"
     end
-    gui.text(_x, _y, _prefix..self.name.." : "..tostring(self.object[self.property_name]).._suffix, _c, text_default_border_color)
+    gui.text(_x, _y, _prefix .. self.name .. " : " .. tostring(self.object[self.property_name]) .. _suffix, _c,
+      text_default_border_color)
   end
 
   function _o:left()
@@ -514,12 +518,12 @@ function button_menu_item(_name, _validate_function)
         self.last_frame_validated = 0
       end
 
-      if (frame_number - self.last_frame_validated < 5 ) then
+      if (frame_number - self.last_frame_validated < 5) then
         _c = 0xFFFF00FF
       end
     end
 
-    gui.text(_x, _y,self.name, _c, text_default_border_color)
+    gui.text(_x, _y, self.name, _c, text_default_border_color)
   end
 
   function _o:validate()
@@ -610,7 +614,6 @@ function make_multitab_menu(_left, _top, _right, _bottom, _content, _on_toggle_e
 end
 
 function multitab_menu_update(_menu, _input)
-
   if _input.down then
     repeat
       if _menu.is_main_menu_selected then
@@ -623,10 +626,10 @@ function multitab_menu_update(_menu, _input)
         end
       end
     until (
-      _menu.is_main_menu_selected or
-      _menu.content[_menu.main_menu_selected_index].entries[_menu.sub_menu_selected_index].is_disabled == nil or
-      not _menu.content[_menu.main_menu_selected_index].entries[_menu.sub_menu_selected_index].is_disabled()
-    )
+        _menu.is_main_menu_selected or
+        _menu.content[_menu.main_menu_selected_index].entries[_menu.sub_menu_selected_index].is_disabled == nil or
+        not _menu.content[_menu.main_menu_selected_index].entries[_menu.sub_menu_selected_index].is_disabled()
+      )
   end
 
   if _input.up then
@@ -641,10 +644,10 @@ function multitab_menu_update(_menu, _input)
         end
       end
     until (
-      _menu.is_main_menu_selected or
-      _menu.content[_menu.main_menu_selected_index].entries[_menu.sub_menu_selected_index].is_disabled == nil or
-      not _menu.content[_menu.main_menu_selected_index].entries[_menu.sub_menu_selected_index].is_disabled()
-    )
+        _menu.is_main_menu_selected or
+        _menu.content[_menu.main_menu_selected_index].entries[_menu.sub_menu_selected_index].is_disabled == nil or
+        not _menu.content[_menu.main_menu_selected_index].entries[_menu.sub_menu_selected_index].is_disabled()
+      )
   end
 
   local _current_entry = _menu.content[_menu.main_menu_selected_index].entries[_menu.sub_menu_selected_index]
@@ -730,7 +733,7 @@ function multitab_menu_draw(_menu)
     local _c = text_disabled_color
     local _t = _menu.content[i].name
     if _menu.is_main_menu_selected and i == _menu.main_menu_selected_index then
-      _t = "< ".._t.." >"
+      _t = "< " .. _t .. " >"
       _c = text_selected_color
     elseif i == _menu.main_menu_selected_index then
       _c = text_default_color
@@ -748,21 +751,23 @@ function multitab_menu_draw(_menu)
   local _is_focused = _menu == menu_stack_top()
   for i = 1, #_menu.content[_menu.main_menu_selected_index].entries do
     if _menu.content[_menu.main_menu_selected_index].entries[i].is_disabled == nil or not _menu.content[_menu.main_menu_selected_index].entries[i].is_disabled() then
-      _menu.content[_menu.main_menu_selected_index].entries[i]:draw(_menu_x, _menu_y + menu_y_interval * _draw_index, not _menu.is_main_menu_selected and _is_focused and _menu.sub_menu_selected_index == i)
+      _menu.content[_menu.main_menu_selected_index].entries[i]:draw(_menu_x, _menu_y + menu_y_interval * _draw_index,
+        not _menu.is_main_menu_selected and _is_focused and _menu.sub_menu_selected_index == i)
       _draw_index = _draw_index + 1
     end
   end
 
   if not _menu.is_main_menu_selected then
     if _menu.content[_menu.main_menu_selected_index].entries[_menu.sub_menu_selected_index].legend then
-      gui.text(_menu_x, _menu.bottom - 12, _menu.content[_menu.main_menu_selected_index].entries[_menu.sub_menu_selected_index]:legend(), text_disabled_color, text_default_border_color)
+      gui.text(_menu_x, _menu.bottom - 12,
+        _menu.content[_menu.main_menu_selected_index].entries[_menu.sub_menu_selected_index]:legend(),
+        text_disabled_color, text_default_border_color)
     end
   end
 
   if _menu.additional_draw ~= nil then
     _menu.additional_draw(_menu)
   end
-
 end
 
 function make_menu(_left, _top, _right, _bottom, _content, _on_toggle_entry, _draw_legend)
@@ -797,16 +802,15 @@ function make_menu(_left, _top, _right, _bottom, _content, _on_toggle_entry, _dr
 end
 
 function menu_update(_menu, _input)
-
   if _input.up then
     if _menu.content[_menu.selected_index].is_in_edition then
       _menu.content[_menu.selected_index]:up()
     else
       repeat
-      _menu.selected_index = _menu.selected_index - 1
-      if _menu.selected_index == 0 then
-        _menu.selected_index = #_menu.content
-      end
+        _menu.selected_index = _menu.selected_index - 1
+        if _menu.selected_index == 0 then
+          _menu.selected_index = #_menu.content
+        end
       until _menu.content[_menu.selected_index].is_disabled == nil or not _menu.content[_menu.selected_index].is_disabled()
     end
   end
@@ -888,7 +892,8 @@ function menu_draw(_menu)
 
   if _menu.draw_legend then
     if _menu.content[_menu.selected_index].legend then
-      gui.text(_menu_x, _menu.bottom - 12, _menu.content[_menu.selected_index]:legend(), text_disabled_color, text_default_border_color)
+      gui.text(_menu_x, _menu.bottom - 12, _menu.content[_menu.selected_index]:legend(), text_disabled_color,
+        text_default_border_color)
     end
   end
 end

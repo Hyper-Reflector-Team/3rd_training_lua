@@ -29,8 +29,10 @@ local function game_to_screen_space(_x, _y)
     return game_to_screen_space_x(_x), game_to_screen_space_y(_y)
 end
 
-function get_text_width(_text)
-    if #_text == 0 then return 0 end
+local function get_text_width(_text)
+    if #_text == 0 then
+        return 0
+    end
 
     return #_text * 4
 end
@@ -143,46 +145,38 @@ function draw_controller_small(_entry, _x, _y, _is_right)
     _x_offset = _x_offset + _sign * _interval
 
     if _entry.buttons[1] then
-        gui.image(_x + _x_offset, _y,
-                  image_tables.img_button_small.img_LP_button_small)
+        gui.image(_x + _x_offset, _y, image_tables.img_button_small.img_LP_button_small)
         _x_offset = _x_offset + _sign * _interval
     end
 
     if _entry.buttons[2] then
-        gui.image(_x + _x_offset, _y,
-                  image_tables.img_button_small.img_MP_button_small)
+        gui.image(_x + _x_offset, _y, image_tables.img_button_small.img_MP_button_small)
         _x_offset = _x_offset + _sign * _interval
     end
 
     if _entry.buttons[3] then
-        gui.image(_x + _x_offset, _y,
-                  image_tables.img_button_small.img_HP_button_small)
+        gui.image(_x + _x_offset, _y, image_tables.img_button_small.img_HP_button_small)
         _x_offset = _x_offset + _sign * _interval
     end
 
     if _entry.buttons[4] then
-        gui.image(_x + _x_offset, _y,
-                  image_tables.img_button_small.img_LK_button_small)
+        gui.image(_x + _x_offset, _y, image_tables.img_button_small.img_LK_button_small)
         _x_offset = _x_offset + _sign * _interval
     end
 
     if _entry.buttons[5] then
-        gui.image(_x + _x_offset, _y,
-                  image_tables.img_button_small.img_MK_button_small)
+        gui.image(_x + _x_offset, _y, image_tables.img_button_small.img_MK_button_small)
         _x_offset = _x_offset + _sign * _interval
     end
 
     if _entry.buttons[6] then
-        gui.image(_x + _x_offset, _y,
-                  image_tables.img_button_small.img_HK_button_small)
+        gui.image(_x + _x_offset, _y, image_tables.img_button_small.img_HK_button_small)
         _x_offset = _x_offset + _sign * _interval
     end
-
 end
 
 -- draws a gauge
-function draw_gauge(_x, _y, _width, _height, _fill_ratio, _fill_color,
-                    _bg_color, _border_color, _reverse_fill)
+function draw_gauge(_x, _y, _width, _height, _fill_ratio, _fill_color, _bg_color, _border_color, _reverse_fill)
     _bg_color = _bg_color or 0x00000000
     _border_color = _border_color or 0xFFFFFFFF
     _reverse_fill = _reverse_fill or false
@@ -192,11 +186,9 @@ function draw_gauge(_x, _y, _width, _height, _fill_ratio, _fill_color,
 
     gui.box(_x, _y, _x + _width, _y + _height, _bg_color, _border_color)
     if _reverse_fill then
-        gui.box(_x + _width, _y, _x + _width - _width * clamp01(_fill_ratio),
-                _y + _height, _fill_color, 0x00000000)
+        gui.box(_x + _width, _y, _x + _width - _width * clamp01(_fill_ratio), _y + _height, _fill_color, 0x00000000)
     else
-        gui.box(_x, _y, _x + _width * clamp01(_fill_ratio), _y + _height,
-                _fill_color, 0x00000000)
+        gui.box(_x, _y, _x + _width * clamp01(_fill_ratio), _y + _height, _fill_color, 0x00000000)
     end
 end
 
@@ -230,6 +222,6 @@ return {
     draw_read = draw_read,
     game_to_screen_space_x = game_to_screen_space_x,
     game_to_screen_space_y = game_to_screen_space_y,
-    game_to_screen_space = game_to_screen_space
-
+    game_to_screen_space = game_to_screen_space,
+    get_text_width = get_text_width,
 }
