@@ -18,7 +18,11 @@ print("")
 
 require("src/tools")
 require("src/memory_adresses")
-require("src/draw")
+
+-- utils
+require("src/utils/draw")
+
+
 require("src/display")
 require("src/framedata")
 require("src/gamestate")
