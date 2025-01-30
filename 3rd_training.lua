@@ -57,13 +57,13 @@ require("src/gamestate")
 require("src/input_history")
 -- refactored require("src/attack_data")
 require("src/frame_advantage")
-require("src/character_select")
+
 -- utils, these do not directly display, typically shared functionality consumed by modules.
 local util_draw = require("src/utils/draw")
 local image_tables = require("src/utils/image_tables")
 -- modules, these display something on the screen and may consume utils
 local module_attack_data = require("src/modules/attack_data")
-
+local module_character_select = require("src/character_select")
 recording_slot_count = 8
 
 -- debug options
@@ -1801,7 +1801,7 @@ display_p2_input_history_item.is_disabled = function()
 end
 
 change_characters_item = button_menu_item("Select Characters",
-    start_character_select_sequence)
+    module_character_select.start_character_select_sequence)
 change_characters_item.is_disabled = function()
     -- not implemented for 4rd strike yet
     return rom_name ~= "sfiii3nr1"
@@ -2412,18 +2412,18 @@ function on_start()
     load_frame_data()
     emu.speedmode("normal")
 
-    if not developer_mode then start_character_select_sequence() end
+    if not developer_mode then module_character_select.start_character_select_sequence() end
 end
 
 function hotkey1()
     set_recording_state({}, 1)
-    start_character_select_sequence()
+    module_character_select.start_character_select_sequence()
 end
 
-function hotkey2() if character_select_sequence_state ~= 0 then select_gill() end end
+function hotkey2() if module_character_select.character_select_sequence_state ~= 0 then module_character_select.select_gill() end end
 
 function hotkey3()
-    if character_select_sequence_state ~= 0 then select_shingouki() end
+    if module_character_select.character_select_sequence_state ~= 0 then module_character_select.select_shingouki() end
 end
 
 input.registerhotkey(1, hotkey1)
@@ -2552,7 +2552,7 @@ function before_frame()
     end
 
     -- character select
-    update_character_select(_input, training_settings.fast_forward_intro)
+    module_character_select.update_character_select(_input, training_settings.fast_forward_intro)
 
     -- Log input
     if previous_input then
@@ -2637,7 +2637,7 @@ is_menu_open = false
 function on_gui()
     if P1.input.pressed.start then clear_printed_geometry() end
 
-    draw_character_select()
+    module_character_select.draw_character_select()
 
     if is_in_match then
         --[[
