@@ -2698,8 +2698,8 @@ function on_gui()
             local _i = joypad.get()
             local _p1 = make_input_history_entry("P1", _i)
             local _p2 = make_input_history_entry("P2", _i)
-            draw_controller_big(_p1, 44, 34)
-            draw_controller_big(_p2, 310, 34)
+            util_draw.draw_controller_big(_p1, 44, 34)
+            util_draw.draw_controller_big(_p2, 310, 34)
         end
 
         -- attack data
@@ -2720,7 +2720,7 @@ function on_gui()
         if debug_settings.show_predicted_hitbox then
             local _predicted_hit = predict_hitboxes(player, 2)
             if _predicted_hit.frame_data then
-                draw_hitboxes(_predicted_hit.pos_x, _predicted_hit.pos_y,
+                util_draw.draw_hitboxes(_predicted_hit.pos_x, _predicted_hit.pos_y,
                     player.flip_x, _predicted_hit.frame_data.boxes)
             end
         end
@@ -2745,7 +2745,7 @@ function on_gui()
                         _debug_move.frames[i].movement[2]
                 end
 
-                draw_hitboxes(_debug_pos_x, _debug_pos_y, _debug_flip_x,
+                util_draw.draw_hitboxes(_debug_pos_x, _debug_pos_y, _debug_flip_x,
                     _debug_move.frames[_move_frame + 1].boxes)
             end
         end
@@ -2831,11 +2831,11 @@ function on_gui()
                 _y + 11, 0x00000000, 0xFFFFFF77)
             gui.box(_cooldown_gauge_right, _y + 10, _cooldown_gauge_right,
                 _y + 12, 0x00000000, 0xFFFFFF77)
-            draw_gauge(_validity_gauge_left, _y + 8, _validity_gauge_width,
+            util_draw.draw_gauge(_validity_gauge_left, _y + 8, _validity_gauge_width,
                 _gauge_height + 1, _parry_object.validity_time /
                 _parry_object.max_validity, _gauge_valid_fill_color,
                 _gauge_background_color, nil, true)
-            draw_gauge(_cooldown_gauge_left, _y + 8 + _gauge_height + 2,
+            util_draw.draw_gauge(_cooldown_gauge_left, _y + 8 + _gauge_height + 2,
                 _cooldown_gauge_width, _gauge_height,
                 _parry_object.cooldown_time / _parry_object.max_cooldown,
                 _gauge_cooldown_fill_color, _gauge_background_color, nil,
@@ -2969,12 +2969,12 @@ function on_gui()
                 _y + 11, 0x00000000, 0xFFFFFF77)
             gui.box(_reset_gauge_right, _y + 10, _reset_gauge_right, _y + 12,
                 0x00000000, 0xFFFFFF77)
-            draw_gauge(_charge_gauge_left, _y + 8, _charge_gauge_width,
+            util_draw.draw_gauge(_charge_gauge_left, _y + 8, _charge_gauge_width,
                 _gauge_height + 1,
                 _charge_object.charge_time / _charge_object.max_charge,
                 _gauge_valid_fill_color, _gauge_background_color, nil,
                 true)
-            draw_gauge(_reset_gauge_left, _y + 8 + _gauge_height + 2,
+            util_draw.draw_gauge(_reset_gauge_left, _y + 8 + _gauge_height + 2,
                 _reset_gauge_width, _gauge_height,
                 _charge_object.reset_time / _charge_object.max_reset,
                 _gauge_cooldown_fill_color, _gauge_background_color, nil,
@@ -2982,7 +2982,7 @@ function on_gui()
             if training_settings.special_training_charge_overcharge_on and
                 _charge_object.overcharge ~= 0 and _charge_object.overcharge <
                 42 then
-                draw_gauge(_charge_gauge_left, _y + 8, _charge_gauge_width,
+                util_draw.draw_gauge(_charge_gauge_left, _y + 8, _charge_gauge_width,
                     _gauge_height + 1, _charge_object.overcharge /
                     _charge_object.max_charge, 0x08FF0044,
                     _gauge_background_color, nil, true)
@@ -3080,7 +3080,7 @@ function on_gui()
             gui.text(_x - util_draw.get_text_width(_reset_text), _y + 24, _reset_text,
                 text_default_color, text_default_border_color)
             if _legs_object.active ~= 0xFF then
-                draw_gauge(_x + _margin, _y + 24, 99, _gauge_height + 1,
+                util_draw.draw_gauge(_x + _margin, _y + 24, 99, _gauge_height + 1,
                     _legs_object.reset_time / 99,
                     _gauge_valid_fill_color, _gauge_background_color,
                     nil, true)

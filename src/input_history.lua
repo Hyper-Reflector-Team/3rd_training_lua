@@ -1,3 +1,8 @@
+-- @module input_history
+-- used for drawing input history on screen
+
+local util_draw = require("src/utils/draw")
+
 input_history_size_max = 15
 input_history = {
   {},
@@ -79,7 +84,7 @@ function input_history_draw(_history, _x, _y, _is_right)
     end
 
     local _controller_offset = 14 * _sign
-    draw_controller_small(_entry, _x + _controller_offset, _current_y, _is_right)
+    util_draw.draw_controller_small(_entry, _x + _controller_offset, _current_y, _is_right)
 
     local _next_frame = frame_number
     if _i < #_history then

@@ -1,4 +1,8 @@
+-- @utils draw
+-- This draws things to the screem such as hitboxes in hitbox view mode etc.
+
 local image_tables = require("src/utils/image_tables")
+local colors = require("src/utils/colors")
 
 local SCREEN_WIDTH = 383
 local SCREEN_HEIGHT = 223
@@ -8,6 +12,7 @@ local screen_x = 0
 local screen_y = 0
 local scale = 1
 
+-- TODO: write better descriptions for the functions
 local function draw_read()
     -- screen stuff
     screen_x = memory.readwordsigned(0x02026CB0)
@@ -17,199 +22,198 @@ local function draw_read()
 end
 
 -- # Tools
-local function game_to_screen_space_x(_x)
-    return _x - screen_x + emu.screenwidth() / 2
+local function game_to_screen_space_x(x)
+    return x - screen_x + emu.screenwidth() / 2
 end
 
-local function game_to_screen_space_y(_y)
-    return emu.screenheight() - (_y - screen_y) - GROUND_OFFSET
+local function game_to_screen_space_y(y)
+    return emu.screenheight() - (y - screen_y) - GROUND_OFFSET
 end
 
-local function game_to_screen_space(_x, _y)
-    return game_to_screen_space_x(_x), game_to_screen_space_y(_y)
+local function game_to_screen_space(x, y)
+    return game_to_screen_space_x(x), game_to_screen_space_y(y)
 end
 
-local function get_text_width(_text)
-    if #_text == 0 then
+local function get_text_width(text)
+    if #text == 0 then
         return 0
     end
 
-    return #_text * 4
+    return #text * 4
 end
 
 -- # Draw functions
-
 -- draws a set of hitboxes
-function draw_hitboxes(_pos_x, _pos_y, _flip_x, _boxes, _filter, _dilation)
-    _dilation = _dilation or 0
-    local _px, _py = game_to_screen_space(_pos_x, _pos_y)
+local function draw_hitboxes(pos_x, pos_y, flip_x, boxes, filter, dilation)
+    dilation = dilation or 0
+    local px, py = game_to_screen_space(pos_x, pos_y)
 
-    for __, _box in ipairs(_boxes) do
-        if _filter == nil or _filter[_box.type] == true then
-            local _c = 0x0000FFFF
-            if (_box.type == "attack") then
-                _c = 0xFF0000FF
-            elseif (_box.type == "throwable") then
-                _c = 0x00FF00FF
-            elseif (_box.type == "throw") then
-                _c = 0xFFFF00FF
-            elseif (_box.type == "push") then
-                _c = 0xFF00FFFF
-            elseif (_box.type == "ext. vulnerability") then
-                _c = 0x00FFFFFF
+    for __, box in ipairs(boxes) do
+        if filter == nil or filter[box.type] == true then
+            local c = colors.hitbox.default
+            if (box.type == "attack") then
+                c = colors.hitbox.attack
+            elseif (box.type == "throwable") then
+                c = colors.hitbox.throwable
+            elseif (box.type == "throw") then
+                c = colors.hitbox.throw
+            elseif (box.type == "push") then
+                c = colors.hitbox.push
+            elseif (box.type == "ext. vulnerability") then
+                c = colors.hitbox.vulnerability
             end
 
-            local _l, _r
-            if _flip_x == 0 then
-                _l = _px + _box.left
+            local l, r
+            if flip_x == 0 then
+                l = px + box.left
             else
-                _l = _px - _box.left - _box.width
+                l = px - box.left - box.width
             end
-            local _r = _l + _box.width
-            local _b = _py - _box.bottom
-            local _t = _b - _box.height
+            local r = l + box.width
+            local b = py - box.bottom
+            local t = b - box.height
 
-            _l = _l - _dilation
-            _r = _r + _dilation
-            _b = _b + _dilation
-            _t = _t - _dilation
+            l = l - dilation
+            r = r + dilation
+            b = b + dilation
+            t = t - dilation
 
-            gui.box(_l, _b, _r, _t, 0x00000000, _c)
+            gui.box(l, b, r, t, colors.gui.empty , c)
         end
     end
 end
 
 -- draws a point
-function draw_point(_x, _y, _color)
-    local _cross_half_size = 4
-    local _l = _x - _cross_half_size
-    local _r = _x + _cross_half_size
-    local _t = _y - _cross_half_size
-    local _b = _y + _cross_half_size
+local function draw_point(x, y, _color)
+    local cross_half_size = 4
+    local l = x - cross_half_size
+    local r = x + cross_half_size
+    local t = y - cross_half_size
+    local b = y + cross_half_size
 
-    gui.box(_l, _y, _r, _y, 0x00000000, _color)
-    gui.box(_x, _t, _x, _b, 0x00000000, _color)
+    gui.box(l, y, r, y, colors.gui.empty, _color)
+    gui.box(x, t, x, b, colors.gui.empty, _color)
 end
 
 -- draws a controller representation
-function draw_controller_big(_entry, _x, _y)
-    gui.image(_x, _y, image_tables.img_dir_big[_entry.direction])
+local function draw_controller_big(entry, x, y)
+    gui.image(x, y, image_tables.img_dir_big[entry.direction])
 
-    local _img_LP = image_tables.img_button_big.img_no_button_big
-    local _img_MP = image_tables.img_button_big.img_no_button_big
-    local _img_HP = image_tables.img_button_big.img_no_button_big
-    local _img_LK = image_tables.img_button_big.img_no_button_big
-    local _img_MK = image_tables.img_button_big.img_no_button_big
-    local _img_HK = image_tables.img_button_big.img_no_button_big
+    local img_LP = image_tables.img_button_big.img_no_button_big
+    local img_MP = image_tables.img_button_big.img_no_button_big
+    local img_HP = image_tables.img_button_big.img_no_button_big
+    local img_LK = image_tables.img_button_big.img_no_button_big
+    local img_MK = image_tables.img_button_big.img_no_button_big
+    local img_HK = image_tables.img_button_big.img_no_button_big
 
-    if _entry.buttons[1] then
-        _img_LP = image_tables.img_button_big.img_L_button_big
+    if entry.buttons[1] then
+        img_LP = image_tables.img_button_big.img_L_button_big
     end
-    if _entry.buttons[2] then
-        _img_MP = image_tables.img_button_big.img_M_button_big
+    if entry.buttons[2] then
+        img_MP = image_tables.img_button_big.img_M_button_big
     end
-    if _entry.buttons[3] then
-        _img_HP = image_tables.img_button_big.img_H_button_big
+    if entry.buttons[3] then
+        img_HP = image_tables.img_button_big.img_H_button_big
     end
-    if _entry.buttons[4] then
-        _img_LK = image_tables.img_button_big.img_L_button_big
+    if entry.buttons[4] then
+        img_LK = image_tables.img_button_big.img_L_button_big
     end
-    if _entry.buttons[5] then
-        _img_MK = image_tables.img_button_big.img_M_button_big
+    if entry.buttons[5] then
+        img_MK = image_tables.img_button_big.img_M_button_big
     end
-    if _entry.buttons[6] then
-        _img_HK = image_tables.img_button_big.img_H_button_big
+    if entry.buttons[6] then
+        img_HK = image_tables.img_button_big.img_H_button_big
     end
 
-    gui.image(_x + 13, _y, _img_LP)
-    gui.image(_x + 18, _y, _img_MP)
-    gui.image(_x + 23, _y, _img_HP)
-    gui.image(_x + 13, _y + 5, _img_LK)
-    gui.image(_x + 18, _y + 5, _img_MK)
-    gui.image(_x + 23, _y + 5, _img_HK)
+    gui.image(x + 13, y, img_LP)
+    gui.image(x + 18, y, img_MP)
+    gui.image(x + 23, y, img_HP)
+    gui.image(x + 13, y + 5, img_LK)
+    gui.image(x + 18, y + 5, img_MK)
+    gui.image(x + 23, y + 5, img_HK)
 end
 
 -- draws a controller representation
-function draw_controller_small(_entry, _x, _y, _is_right)
-    local _x_offset = 0
-    local _sign = 1
-    if _is_right then
-        _x_offset = _x_offset - 9
-        _sign = -1
+local function draw_controller_small(entry, x, y, is_right)
+    local x_offset = 0
+    local sign = 1
+    if is_right then
+        x_offset = x_offset - 9
+        sign = -1
     end
 
-    gui.image(_x + _x_offset, _y, image_tables.img_dir_small[_entry.direction])
-    _x_offset = _x_offset + _sign * 2
+    gui.image(x + x_offset, y, image_tables.img_dir_small[entry.direction])
+    x_offset = x_offset + sign * 2
 
-    local _interval = 8
-    _x_offset = _x_offset + _sign * _interval
+    local interval = 8
+    x_offset = x_offset + sign * interval
 
-    if _entry.buttons[1] then
-        gui.image(_x + _x_offset, _y, image_tables.img_button_small.img_LP_button_small)
-        _x_offset = _x_offset + _sign * _interval
+    if entry.buttons[1] then
+        gui.image(x + x_offset, y, image_tables.img_button_small.img_LP_button_small)
+        x_offset = x_offset + sign * interval
     end
 
-    if _entry.buttons[2] then
-        gui.image(_x + _x_offset, _y, image_tables.img_button_small.img_MP_button_small)
-        _x_offset = _x_offset + _sign * _interval
+    if entry.buttons[2] then
+        gui.image(x + x_offset, y, image_tables.img_button_small.img_MP_button_small)
+        x_offset = x_offset + sign * interval
     end
 
-    if _entry.buttons[3] then
-        gui.image(_x + _x_offset, _y, image_tables.img_button_small.img_HP_button_small)
-        _x_offset = _x_offset + _sign * _interval
+    if entry.buttons[3] then
+        gui.image(x + x_offset, y, image_tables.img_button_small.img_HP_button_small)
+        x_offset = x_offset + sign * interval
     end
 
-    if _entry.buttons[4] then
-        gui.image(_x + _x_offset, _y, image_tables.img_button_small.img_LK_button_small)
-        _x_offset = _x_offset + _sign * _interval
+    if entry.buttons[4] then
+        gui.image(x + x_offset, y, image_tables.img_button_small.img_LK_button_small)
+        x_offset = x_offset + sign * interval
     end
 
-    if _entry.buttons[5] then
-        gui.image(_x + _x_offset, _y, image_tables.img_button_small.img_MK_button_small)
-        _x_offset = _x_offset + _sign * _interval
+    if entry.buttons[5] then
+        gui.image(x + x_offset, y, image_tables.img_button_small.img_MK_button_small)
+        x_offset = x_offset + sign * interval
     end
 
-    if _entry.buttons[6] then
-        gui.image(_x + _x_offset, _y, image_tables.img_button_small.img_HK_button_small)
-        _x_offset = _x_offset + _sign * _interval
+    if entry.buttons[6] then
+        gui.image(x + x_offset, y, image_tables.img_button_small.img_HK_button_small)
+        x_offset = x_offset + sign * interval
     end
 end
 
 -- draws a gauge
-function draw_gauge(_x, _y, _width, _height, _fill_ratio, _fill_color, _bg_color, _border_color, _reverse_fill)
-    _bg_color = _bg_color or 0x00000000
-    _border_color = _border_color or 0xFFFFFFFF
-    _reverse_fill = _reverse_fill or false
+local function draw_gauge(x, y, width, height, fill_ratio, fill_color, bg_color, border_color, reverse_fill)
+    bg_color = bg_color or colors.gui.empty
+    border_color = border_color or colors.gui.white
+    reverse_fill = reverse_fill or false
 
-    _width = _width + 1
-    _height = _height + 1
+    width = width + 1
+    height = height + 1
 
-    gui.box(_x, _y, _x + _width, _y + _height, _bg_color, _border_color)
-    if _reverse_fill then
-        gui.box(_x + _width, _y, _x + _width - _width * clamp01(_fill_ratio), _y + _height, _fill_color, 0x00000000)
+    gui.box(x, y, x + width, y + height, bg_color, border_color)
+    if reverse_fill then
+        gui.box(x + width, y, x + width - width * clamp01(fill_ratio), y + height, fill_color, colors.gui.empty)
     else
-        gui.box(_x, _y, _x + _width * clamp01(_fill_ratio), _y + _height, _fill_color, 0x00000000)
+        gui.box(x, y, x + width * clamp01(fill_ratio), y + height, fill_color, colors.gui.empty)
     end
 end
 
 -- draws an horizontal line
-function draw_horizontal_line(_x_start, _x_end, _y, _color, _thickness)
-    _thickness = _thickness or 1.0
-    local _l = _x_start - 1
-    local _b = _y + math.ceil(_thickness * 0.5)
-    local _r = _x_end + 1
-    local _t = _y - math.floor(_thickness * 0.5) - 1
-    gui.box(_l, _b, _r, _t, _color, 0x00000000)
+local function draw_horizontal_line(x_start, x_end, y, color, thickness)
+    thickness = thickness or 1.0
+    local l = x_start - 1
+    local b = y + math.ceil(thickness * 0.5)
+    local r = x_end + 1
+    local t = y - math.floor(thickness * 0.5) - 1
+    gui.box(l, b, r, t, color, colors.gui.empty)
 end
 
 -- draws a vertical line
-function draw_vertical_line(_x, _y_start, _y_end, _color, _thickness)
-    _thickness = _thickness or 1.0
-    local _l = _x - math.floor(_thickness * 0.5) - 1
-    local _b = _y_end + 1
-    local _r = _x + math.ceil(_thickness * 0.5)
-    local _t = _y_start - 1
-    gui.box(_l, _b, _r, _t, _color, 0x00000000)
+local function draw_vertical_line(x, y_start, y_end, color, thickness)
+    thickness = thickness or 1.0
+    local l = x - math.floor(thickness * 0.5) - 1
+    local b = y_end + 1
+    local r = x + math.ceil(thickness * 0.5)
+    local t = y_start - 1
+    gui.box(l, b, r, t, color, colors.gui.empty)
 end
 
 return {
@@ -224,4 +228,11 @@ return {
     game_to_screen_space_y = game_to_screen_space_y,
     game_to_screen_space = game_to_screen_space,
     get_text_width = get_text_width,
+    draw_hitboxes = draw_hitboxes,
+    draw_point = draw_point,
+    draw_controller_big = draw_controller_big,
+    draw_controller_small = draw_controller_small,
+    draw_gauge = draw_gauge,
+    draw_horizontal_line = draw_horizontal_line,
+    draw_vertical_line = draw_vertical_line
 }

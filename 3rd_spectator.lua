@@ -157,35 +157,35 @@ function on_gui()
   local _i = joypad.get()
   if spectator_settings.display_controllers == 2 or spectator_settings.display_controllers == 3 then
     local _p1 = make_input_history_entry("P1", _i)
-    draw_controller_big(_p1, 44, 34)
+    util_draw.draw_controller_big(_p1, 44, 34)
   end
 
   if spectator_settings.display_controllers == 2 or spectator_settings.display_controllers == 4 then
     local _p2 = make_input_history_entry("P2", _i)
-    draw_controller_big(_p2, 310, 34)
+    util_draw.draw_controller_big(_p2, 310, 34)
   end
 
   if is_in_match then
 
     -- hitboxes
     if spectator_settings.display_hitboxes == 2 or spectator_settings.display_hitboxes == 3 then
-      draw_hitboxes(player_objects[1].pos_x, player_objects[1].pos_y, player_objects[1].flip_x, player_objects[1].boxes)
+      util_draw.draw_hitboxes(player_objects[1].pos_x, player_objects[1].pos_y, player_objects[1].flip_x, player_objects[1].boxes)
 
       -- projectiles
       for _id, _obj in pairs(projectiles) do
         if _obj.emitter_id == 1 then
-          draw_hitboxes(_obj.pos_x, _obj.pos_y, _obj.flip_x, _obj.boxes)
+          util_draw.draw_hitboxes(_obj.pos_x, _obj.pos_y, _obj.flip_x, _obj.boxes)
         end
       end
     end
 
     if spectator_settings.display_hitboxes == 2 or spectator_settings.display_hitboxes == 4 then
-      draw_hitboxes(player_objects[2].pos_x, player_objects[2].pos_y, player_objects[2].flip_x, player_objects[2].boxes)
+      util_draw.draw_hitboxes(player_objects[2].pos_x, player_objects[2].pos_y, player_objects[2].flip_x, player_objects[2].boxes)
 
       -- projectiles
       for _id, _obj in pairs(projectiles) do
         if _obj.emitter_id == 2 then
-          draw_hitboxes(_obj.pos_x, _obj.pos_y, _obj.flip_x, _obj.boxes)
+          util_draw.draw_hitboxes(_obj.pos_x, _obj.pos_y, _obj.flip_x, _obj.boxes)
         end
       end
     end

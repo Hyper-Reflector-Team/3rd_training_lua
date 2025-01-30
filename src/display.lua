@@ -36,10 +36,10 @@ function display_draw_printed_geometry()
     -- printed geometry
     for _i, _geometry in ipairs(printed_geometry) do
         if _geometry.type == "hitboxes" then
-            draw_hitboxes(_geometry.x, _geometry.y, _geometry.flip_x,
+            util_draw.draw_hitboxes(_geometry.x, _geometry.y, _geometry.flip_x,
                 _geometry.boxes, _geometry.filter, _geometry.dilation)
         elseif _geometry.type == "point" then
-            draw_point(_geometry.x, _geometry.y, _geometry.color)
+            util_draw.draw_point(_geometry.x, _geometry.y, _geometry.color)
         end
     end
 end
@@ -47,11 +47,11 @@ end
 function display_draw_hitboxes()
     -- players
     for _id, _obj in pairs(player_objects) do
-        draw_hitboxes(_obj.pos_x, _obj.pos_y, _obj.flip_x, _obj.boxes)
+        util_draw.draw_hitboxes(_obj.pos_x, _obj.pos_y, _obj.flip_x, _obj.boxes)
     end
     -- projectiles
     for _id, _obj in pairs(projectiles) do
-        draw_hitboxes(_obj.pos_x, _obj.pos_y, _obj.flip_x, _obj.boxes)
+        util_draw.draw_hitboxes(_obj.pos_x, _obj.pos_y, _obj.flip_x, _obj.boxes)
     end
 end
 
@@ -160,18 +160,18 @@ function draw_horizontal_text_segment(_p1_x, _p2_x, _y, _text, _line_color,
     local _half_distance_str_width = util_draw.get_text_width(_text) * 0.5
 
     local _center_x = (_p1_x + _p2_x) * 0.5
-    draw_horizontal_line(math.min(_p1_x, _p2_x),
+    util_draw.draw_horizontal_line(math.min(_p1_x, _p2_x),
         _center_x - _half_distance_str_width - 3, _y,
         _line_color, 1)
-    draw_horizontal_line(_center_x + _half_distance_str_width + 3,
+    util_draw.draw_horizontal_line(_center_x + _half_distance_str_width + 3,
         math.max(_p1_x, _p2_x), _y, _line_color, 1)
     gui.text(_center_x - _half_distance_str_width, _y - 3, _text,
         text_default_color, text_default_border_color)
 
     if _edges_height > 0 then
-        draw_vertical_line(_p1_x, _y - _edges_height, _y + _edges_height,
+        util_draw.draw_vertical_line(_p1_x, _y - _edges_height, _y + _edges_height,
             _line_color, 1)
-        draw_vertical_line(_p2_x, _y - _edges_height, _y + _edges_height,
+        util_draw.draw_vertical_line(_p2_x, _y - _edges_height, _y + _edges_height,
             _line_color, 1)
     end
 end
@@ -278,8 +278,8 @@ function display_draw_distances(_p1_object, _p2_object, _mid_distance_height,
         _p1_object.pos_x, _p1_object.pos_y)
     local _p2_screen_x, _p2_screen_y = util_draw.game_to_screen_space(
         _p2_object.pos_x, _p2_object.pos_y)
-    draw_point(_p1_screen_x, _p1_screen_y, _line_color)
-    draw_point(_p2_screen_x, _p2_screen_y, _line_color)
+    util_draw.draw_point(_p1_screen_x, _p1_screen_y, _line_color)
+    util_draw.draw_point(_p2_screen_x, _p2_screen_y, _line_color)
     gui.text(_p1_screen_x + 3, _p1_screen_y + 2,
         string.format("%d:%d", _p1_object.pos_x, _p1_object.pos_y),
         text_default_color, text_default_border_color)
