@@ -1,6 +1,5 @@
 -- @utils draw
 -- This draws things to the screem such as hitboxes in hitbox view mode etc.
-
 local image_tables = require("src/utils/image_tables")
 local colors = require("src/utils/colors")
 
@@ -22,22 +21,14 @@ local function draw_read()
 end
 
 -- # Tools
-local function game_to_screen_space_x(x)
-    return x - screen_x + emu.screenwidth() / 2
-end
+local function game_to_screen_space_x(x) return x - screen_x + emu.screenwidth() / 2 end
 
-local function game_to_screen_space_y(y)
-    return emu.screenheight() - (y - screen_y) - GROUND_OFFSET
-end
+local function game_to_screen_space_y(y) return emu.screenheight() - (y - screen_y) - GROUND_OFFSET end
 
-local function game_to_screen_space(x, y)
-    return game_to_screen_space_x(x), game_to_screen_space_y(y)
-end
+local function game_to_screen_space(x, y) return game_to_screen_space_x(x), game_to_screen_space_y(y) end
 
 local function get_text_width(text)
-    if #text == 0 then
-        return 0
-    end
+    if #text == 0 then return 0 end
 
     return #text * 4
 end
@@ -78,7 +69,7 @@ local function draw_hitboxes(pos_x, pos_y, flip_x, boxes, filter, dilation)
             b = b + dilation
             t = t - dilation
 
-            gui.box(l, b, r, t, colors.gui.empty , c)
+            gui.box(l, b, r, t, colors.gui.empty, c)
         end
     end
 end
@@ -106,24 +97,12 @@ local function draw_controller_big(entry, x, y)
     local img_MK = image_tables.img_button_big.img_no_button_big
     local img_HK = image_tables.img_button_big.img_no_button_big
 
-    if entry.buttons[1] then
-        img_LP = image_tables.img_button_big.img_L_button_big
-    end
-    if entry.buttons[2] then
-        img_MP = image_tables.img_button_big.img_M_button_big
-    end
-    if entry.buttons[3] then
-        img_HP = image_tables.img_button_big.img_H_button_big
-    end
-    if entry.buttons[4] then
-        img_LK = image_tables.img_button_big.img_L_button_big
-    end
-    if entry.buttons[5] then
-        img_MK = image_tables.img_button_big.img_M_button_big
-    end
-    if entry.buttons[6] then
-        img_HK = image_tables.img_button_big.img_H_button_big
-    end
+    if entry.buttons[1] then img_LP = image_tables.img_button_big.img_L_button_big end
+    if entry.buttons[2] then img_MP = image_tables.img_button_big.img_M_button_big end
+    if entry.buttons[3] then img_HP = image_tables.img_button_big.img_H_button_big end
+    if entry.buttons[4] then img_LK = image_tables.img_button_big.img_L_button_big end
+    if entry.buttons[5] then img_MK = image_tables.img_button_big.img_M_button_big end
+    if entry.buttons[6] then img_HK = image_tables.img_button_big.img_H_button_big end
 
     gui.image(x + 13, y, img_LP)
     gui.image(x + 18, y, img_MP)
