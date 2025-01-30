@@ -1,6 +1,7 @@
 -- dusty version
 require("src/startup")
 
+-- initial prints for lua window.
 print("-----------------------------")
 print("  3rd_training.lua - " .. script_version .. "")
 print("  Training mode for " .. game_name .. "")
@@ -16,37 +17,6 @@ print("- In normal mode, press \"Coin\" to start/stop replay")
 print("- Lua Hotkey 1 (alt+1) to return to character select screen")
 print("")
 
--- Kudos to indirect contributors:
--- *esn3s* for his work on 3s frame data : http://baston.esn3s.com/
--- *dammit* for his work on 3s hitbox display script : https://dammit.typepad.com/blog/2011/10/improved-3rd-strike-hitboxes.html
--- *furitiem* for his prior work on 3s C# training program : https://www.youtube.com/watch?v=vE27xe0QM64
--- *crytal_cube99* for his prior work on 3s training & trial scripts : https://ameblo.jp/3fv/
-
--- Thanks to *speedmccool25* for recording all the 4rd strike frame data
--- Thanks to *ProfessorAnon* for the Charge and Hyakuretsu Kyaku special training mode
--- Thanks to *sammygutierrez* for the damage info display
-
--- FBA-RR Scripting reference:
--- http://tasvideos.org/EmulatorResources/VBA/LuaScriptingFunctions.html
--- https://github.com/TASVideos/mame-rr/wiki/Lua-scripting-functions
-
--- Resources
--- https://github.com/Jesuszilla/mame-rr-scripts/blob/master/framedata.lua
--- https://imgur.com/gallery/0Tsl7di
-
--- Stuff
--- As far of selective stages, this one is Elena's Stage, write this: 0x020154F5,0x08
--- It would be also nice to show "alt+1 reset char select" on the top left corner in the character select screen
--- optional speed up
-
---[[
-would it be possible to add a "first, second, third" action when getting hit?  So for example i divekick on opponent, first time they throw, second time they standing hk, third time they do another thing.
-This isn't really possible with weighting but it can be extremely important for figuring out options after hitting specific choices your opponent makes at awkward timings.  So like block 1 = recording 1, block 2 = recording 2, block 3 = recording 3.
-it'd need its own menu for setup that would be used just like the "recording" reaction option, but with 1-5 layers.  Possibly adding "random recording" as an option for the replay instead of a specific one as well
-So like you do your first choice and want opponent to throw, but second time you want them to either throw, or do option 2 or 3  etc etc
-And also having throw as an option there as well so you have one less option to record if you don't want a button action
-]] --
-
 -- Includes
 require("src/tools")
 require("src/memory_adresses")
@@ -54,16 +24,16 @@ require("src/display")
 require("src/menu_widgets")
 require("src/framedata")
 require("src/gamestate")
-require("src/input_history")
--- refactored require("src/attack_data")
 require("src/frame_advantage")
 
 -- utils, these do not directly display, typically shared functionality consumed by modules.
 local util_draw = require("src/utils/draw")
 local image_tables = require("src/utils/image_tables")
+
 -- modules, these display something on the screen and may consume utils
+local module_input_history = require("src/input_history")
 local module_attack_data = require("src/modules/attack_data")
-local module_character_select = require("src/character_select")
+local module_character_select = require("src/modules/character_select")
 recording_slot_count = 8
 
 -- debug options
@@ -227,7 +197,7 @@ function is_playing_input_sequence(_player_obj)
         _player_obj.pending_input_sequence.current_frame >= 1
 end
 
-function make_input_empty(_input)
+function make_input_empty(_input) -- TODO: send to utils...
     if _input == nil then return end
 
     _input["P1 Up"] = false
@@ -2420,7 +2390,8 @@ function hotkey1()
     module_character_select.start_character_select_sequence()
 end
 
-function hotkey2() if module_character_select.character_select_sequence_state ~= 0 then module_character_select.select_gill() end end
+function hotkey2() if module_character_select.character_select_sequence_state ~= 0 then module_character_select
+            .select_gill() end end
 
 function hotkey3()
     if module_character_select.character_select_sequence_state ~= 0 then module_character_select.select_shingouki() end
@@ -2696,8 +2667,8 @@ function on_gui()
         -- controllers
         if training_settings.display_input then
             local _i = joypad.get()
-            local _p1 = make_input_history_entry("P1", _i)
-            local _p2 = make_input_history_entry("P2", _i)
+            local _p1 = module_input_history.make_input_history_entry("P1", _i)
+            local _p2 = module_input_history.make_input_history_entry("P2", _i)
             util_draw.draw_controller_big(_p1, 44, 34)
             util_draw.draw_controller_big(_p2, 310, 34)
         end

@@ -1,6 +1,8 @@
 -- @module character_select
 -- this is run when the player is on the character select screen allowing for various options, like selecting gill.
 
+-- TODO: look into whether or not any of this actually works for selecting special characters. - dusty
+
 local character_select_coroutine = nil
 
 -- 0 is out
@@ -118,7 +120,7 @@ local function update_character_select(input, do_fast_forward)
   if character_select_sequence_state == 1 or character_select_sequence_state == 3 then
     for _key, _state in pairs(input) do
       if _state == true then
-        makeinput_empty(input)
+        make_input_empty(input)
         return
       end
     end

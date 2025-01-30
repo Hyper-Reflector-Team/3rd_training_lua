@@ -3,42 +3,54 @@
 
 local util_draw = require("src/utils/draw")
 
-input_history_size_max = 15
-input_history = {
+local input_history_size_max = 15
+input_history = { -- many uses
   {},
   {}
 }
 
-function make_input_history_entry(_prefix, _input)
-  local _up = _input[_prefix.." Up"]
-  local _down = _input[_prefix.." Down"]
-  local _left = _input[_prefix.." Left"]
-  local _right = _input[_prefix.." Right"]
+local function make_input_history_entry(_prefix, _input)
+  local _up = _input[_prefix .. " Up"]
+  local _down = _input[_prefix .. " Down"]
+  local _left = _input[_prefix .. " Left"]
+  local _right = _input[_prefix .. " Right"]
   local _direction = 5
   if _down then
-    if _left then _direction = 1
-    elseif _right then _direction = 3
-    else _direction = 2 end
+    if _left then
+      _direction = 1
+    elseif _right then
+      _direction = 3
+    else
+      _direction = 2
+    end
   elseif _up then
-    if _left then _direction = 7
-    elseif _right then _direction = 9
-    else _direction = 8 end
+    if _left then
+      _direction = 7
+    elseif _right then
+      _direction = 9
+    else
+      _direction = 8
+    end
   else
-    if _left then _direction = 4
-    elseif _right then _direction = 6
-    else _direction = 5 end
+    if _left then
+      _direction = 4
+    elseif _right then
+      _direction = 6
+    else
+      _direction = 5
+    end
   end
 
   return {
     frame = frame_number,
     direction = _direction,
     buttons = {
-      _input[_prefix.." Weak Punch"],
-      _input[_prefix.." Medium Punch"],
-      _input[_prefix.." Strong Punch"],
-      _input[_prefix.." Weak Kick"],
-      _input[_prefix.." Medium Kick"],
-      _input[_prefix.." Strong Kick"]
+      _input[_prefix .. " Weak Punch"],
+      _input[_prefix .. " Medium Punch"],
+      _input[_prefix .. " Strong Punch"],
+      _input[_prefix .. " Weak Kick"],
+      _input[_prefix .. " Medium Kick"],
+      _input[_prefix .. " Strong Kick"]
     }
   }
 end
@@ -100,8 +112,11 @@ function input_history_draw(_history, _x, _y, _is_right)
     if not _is_right then
       _offset = 8
       if (_frame_diff < 999) then
-        if (_frame_diff >= 100) then _offset = 0
-        elseif (_frame_diff >= 10) then _offset = 4 end
+        if (_frame_diff >= 100) then
+          _offset = 0
+        elseif (_frame_diff >= 10) then
+          _offset = 4
+        end
       end
     end
 
@@ -115,3 +130,8 @@ function clear_input_history()
   input_history[1] = {}
   input_history[2] = {}
 end
+
+return {
+  make_input_history_entry = make_input_history_entry,
+
+}
