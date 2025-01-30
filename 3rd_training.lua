@@ -1,3 +1,4 @@
+-- dusty version
 require("src/startup")
 
 print("-----------------------------")
@@ -55,9 +56,10 @@ require("src/menu_widgets")
 require("src/framedata")
 require("src/gamestate")
 require("src/input_history")
-require("src/attack_data")
+-- refactored require("src/attack_data")
 require("src/frame_advantage")
 require("src/character_select")
+local attack_data = require("src/utils/attack_data")
 
 recording_slot_count = 8
 
@@ -2226,7 +2228,7 @@ end
 
 function on_load_state()
   reset_player_objects()
-  attack_data_reset()
+  attack_data.attack_data_reset()
   frame_advantage_reset()
 
   gamestate_read()
@@ -2343,7 +2345,7 @@ function before_frame()
   end
 
   -- attack data
-  attack_data_update(player, dummy)
+  attack_data.attack_data_update(player, dummy)
 
   -- frame advantage
   frame_advantage_update(player, dummy)
@@ -2374,7 +2376,7 @@ function before_frame()
     input_history_update(input_history[2], "P2", _input)
   else
     clear_input_history()
-    attack_data_reset()
+    attack_data.attack_data_reset()
     frame_advantage_reset()
   end
 
@@ -2519,7 +2521,7 @@ function on_gui()
     -- attack data
     -- do not show if special training not following character is on, otherwise it will overlap
     if training_settings.display_attack_data and (training_settings.special_training_current_mode == 1 or training_settings.special_training_follow_character) then
-      attack_data_display()
+      attack_data.attack_data_display()
     end
 
     -- move advantage
