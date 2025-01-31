@@ -1,4 +1,4 @@
--- @utils draw
+-- @util draw
 -- This draws things to the screem such as hitboxes in hitbox view mode etc.
 local image_tables = require("src/utils/image_tables")
 local colors = require("src/utils/colors")

@@ -28,7 +28,6 @@ local img_dir_small = {
     img_7_dir_small, -- 6
     img_8_dir_small, -- 7
     img_9_dir_small -- 8
-
 }
 
 local img_button_small = {
@@ -64,7 +63,6 @@ local img_dir_big = {
     img_7_dir_big, -- 6
     img_8_dir_big, -- 7
     img_9_dir_big -- 8
-
 }
 
 local img_button_big = {img_no_button_big = img_no_button_big, img_L_button_big = img_L_button_big, img_M_button_big = img_M_button_big, img_H_button_big = img_H_button_big}

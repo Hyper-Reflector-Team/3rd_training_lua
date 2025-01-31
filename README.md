@@ -2,6 +2,7 @@
 ## I will be updating this periodically.
 
 Refactored using https://github.com/luarocks/lua-style-guide as a reference.
+Formatted using LuaFormatter and the associated configs which are now located in the source. - https://github.com/Koihik/LuaFormatter?tab=readme-ov-file
 
 
 # 3rd_training_lua
