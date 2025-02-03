@@ -7,73 +7,74 @@ function t_assert(_condition, _msg)
 end
 
 function string:split(sep)
-   local sep, fields = sep or ":", {}
-   local pattern = string.format("([^%s]+)", sep)
-   self:gsub(pattern, function(c) fields[#fields+1] = c end)
-   return fields
+  local sep, fields = sep or ":", {}
+  local pattern = string.format("([^%s]+)", sep)
+  self:gsub(pattern, function(c) fields[#fields + 1] = c end)
+  return fields
 end
 
 function string_hash(_str)
-	if #_str == 0 then
-		return 0
+  if #_str == 0 then
+    return 0
   end
 
   local _DJB2_INIT = 5381;
-	local _hash = _DJB2_INIT
+  local _hash = _DJB2_INIT
   for _i = 1, #_str do
-    local _c = string.byte(_str,_i)
+    local _c = string.byte(_str, _i)
     _hash = bit.lshift(_hash, 5) + _hash + _c
   end
-	return _hash
+  return _hash
 end
 
 function string_to_color(_str)
   local _HRange = { 0.0, 360.0 }
-	local _SRange = { 0.8, 1.0 }
-	local _LRange = { 0.7, 1.0 }
+  local _SRange = { 0.8, 1.0 }
+  local _LRange = { 0.7, 1.0 }
 
-	local _HAmplitude = _HRange[2] - _HRange[1];
-	local _SAmplitude = _SRange[2] - _SRange[1];
-	local _LAmplitude = _LRange[2] - _LRange[1];
+  local _HAmplitude = _HRange[2] - _HRange[1];
+  local _SAmplitude = _SRange[2] - _SRange[1];
+  local _LAmplitude = _LRange[2] - _LRange[1];
 
   local _hash = string_hash(_str)
 
   local _HI = bit.rshift(bit.band(_hash, 0xFF000000), 24)
   local _SI = bit.rshift(bit.band(_hash, 0x00FF0000), 16)
-	local _LI = bit.rshift(bit.band(_hash, 0x0000FF00), 8)
-	local _base = bit.lshift(1, 8)
+  local _LI = bit.rshift(bit.band(_hash, 0x0000FF00), 8)
+  local _base = bit.lshift(1, 8)
 
-	local _H = _HRange[1] + (_HI / _base) * _HAmplitude;
-	local _S = _SRange[1] + (_SI / _base) * _SAmplitude;
-	local _L = _LRange[1] + (_LI / _base) * _LAmplitude;
+  local _H = _HRange[1] + (_HI / _base) * _HAmplitude;
+  local _S = _SRange[1] + (_SI / _base) * _SAmplitude;
+  local _L = _LRange[1] + (_LI / _base) * _LAmplitude;
 
-	local _HDiv60 = _H / 60.0
-	local _HDiv60_Floor = math.floor(_HDiv60);
-	local _HDiv60_Fraction = _HDiv60 - _HDiv60_Floor;
+  local _HDiv60 = _H / 60.0
+  local _HDiv60_Floor = math.floor(_HDiv60);
+  local _HDiv60_Fraction = _HDiv60 - _HDiv60_Floor;
 
-	local _RGBValues = {
-		_L,
-		_L * (1.0 - _S),
-		_L * (1.0 - (_HDiv60_Fraction * _S)),
-		_L * (1.0 - ((1.0 - _HDiv60_Fraction) * _S))
-	}
+  local _RGBValues = {
+    _L,
+    _L * (1.0 - _S),
+    _L * (1.0 - (_HDiv60_Fraction * _S)),
+    _L * (1.0 - ((1.0 - _HDiv60_Fraction) * _S))
+  }
 
-	local _RGBSwizzle = {
-		{1, 4, 2},
-		{3, 1, 2},
-		{2, 1, 4},
-		{2, 3, 1},
-		{4, 2, 1},
-		{1, 2, 3},
-	}
-	local _SwizzleIndex = (_HDiv60_Floor % 6) + 1
+  local _RGBSwizzle = {
+    { 1, 4, 2 },
+    { 3, 1, 2 },
+    { 2, 1, 4 },
+    { 2, 3, 1 },
+    { 4, 2, 1 },
+    { 1, 2, 3 },
+  }
+  local _SwizzleIndex = (_HDiv60_Floor % 6) + 1
   local _R = _RGBValues[_RGBSwizzle[_SwizzleIndex][1]]
   local _G = _RGBValues[_RGBSwizzle[_SwizzleIndex][2]]
   local _B = _RGBValues[_RGBSwizzle[_SwizzleIndex][3]]
 
   --print(string.format("H:%.1f, S:%.1f, L:%.1f | R:%.1f, G:%.1f, B:%.1f", _H, _S, _L, _R, _G, _B))
 
-  local _color = bit.lshift(math.floor(_R * 255), 24) + bit.lshift(math.floor(_G * 255), 16) + bit.lshift(math.floor(_B * 255), 8) + 0xFF
+  local _color = bit.lshift(math.floor(_R * 255), 24) + bit.lshift(math.floor(_G * 255), 16) +
+      bit.lshift(math.floor(_B * 255), 8) + 0xFF
   return _color
 end
 
@@ -88,7 +89,7 @@ end
 function memory_readword_reverse(_addr)
   local _1 = memory.readbyte(_addr)
   local _2 = memory.readbyte(_addr + 1)
-  return  bit.bor(bit.lshift(_2, 8), _1)
+  return bit.bor(bit.lshift(_2, 8), _1)
 end
 
 function clamp01(_number)
@@ -105,7 +106,7 @@ function check_input_down_autofire(_player_object, _input, _autofire_rate, _auto
 end
 
 -- json tools
-local json = require ("src/libs/dkjson")
+local json = require("src/libs/dkjson")
 
 function read_object_from_json_file(_file_path)
   local _f = io.open(_file_path, "r")
@@ -210,7 +211,7 @@ function log_update()
   -- compute filtered logs
   for _i = 1, #logs do
     local _frame = logs[_i]
-    local _filtered_frame = { frame = _frame.frame, events = {}}
+    local _filtered_frame = { frame = _frame.frame, events = {} }
     for _j, _event in ipairs(_frame.events) do
       if log_categories_display[_event.category] and log_categories_display[_event.category].history then
         table.insert(_filtered_frame.events, _event)
@@ -270,7 +271,7 @@ function log_draw()
   local _columns_start = { 0, 20, 200 }
   local _box_size = 6
   local _box_margin = 2
-  gui.box(_x_start, _y_start , _x_start + _width, _y_start, 0x00000000, _separator_color)
+  gui.box(_x_start, _y_start, _x_start + _width, _y_start, 0x00000000, _separator_color)
   local _last_displayed_frame = 0
   for _i = 0, log_line_count_max do
     local _frame_index = #_log - (_i + log_line_offset)
@@ -278,7 +279,7 @@ function log_draw()
       break
     end
     local _frame = _log[_frame_index]
-    local _events = {{}, {}, {}}
+    local _events = { {}, {}, {} }
     for _j, _event in ipairs(_frame.events) do
       if log_categories_display[_event.category] and log_categories_display[_event.category].history then
         table.insert(_events[log_sections[_event.section]], _event)
@@ -294,7 +295,7 @@ function log_draw()
         gui.box(_box_x, _box_y, _box_x + _box_size, _box_y + _box_size, _event.color, 0x00000000)
         gui.box(_box_x + 1, _box_y + 1, _box_x + _box_size - 1, _box_y + _box_size - 1, 0x00000000, 0x00000022)
         gui.text(_box_x + _box_size + _box_margin, _box_y, _event.name, text_default_color, 0x00000000)
-        _box_x = _box_x + _box_size + _box_margin + get_text_width(_event.name) + _box_margin
+        _box_x = _box_x + _box_size + _box_margin + util_draw.get_text_width(_event.name) + _box_margin
       end
     end
 
@@ -335,15 +336,15 @@ function log_state(_obj, _names)
   local _str = ""
   for _i, _name in ipairs(_names) do
     if _i > 0 then
-      _str = _str..", "
+      _str = _str .. ", "
     end
-    _str = _str.._name..":"
+    _str = _str .. _name .. ":"
     local _value = _obj[_name]
     local _type = type(_value)
     if _type == "boolean" then
-      _str = _str..string.format("%d", to_bit(_value))
+      _str = _str .. string.format("%d", to_bit(_value))
     elseif _type == "number" then
-      _str = _str..string.format("%d", _value)
+      _str = _str .. string.format("%d", _value)
     end
   end
   print(_str)

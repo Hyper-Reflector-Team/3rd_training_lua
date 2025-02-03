@@ -1,9 +1,12 @@
+local util_draw = require("src/utils/draw")
+
 move_advantage = {}
 
 function frame_advantage_update(_attacker, _defender)
-
   function has_just_attacked(_player_obj)
-    return _player_obj.has_just_attacked or _player_obj.has_just_thrown or (_player_obj.recovery_time == 0 and _player_obj.freeze_frames == 0 and _player_obj.input_capacity == 0 and _player_obj.previous_input_capacity ~= 0) or (_player_obj.movement_type == 4 and _player_obj.last_movement_type_change_frame == 0)
+    return _player_obj.has_just_attacked or _player_obj.has_just_thrown or
+    (_player_obj.recovery_time == 0 and _player_obj.freeze_frames == 0 and _player_obj.input_capacity == 0 and _player_obj.previous_input_capacity ~= 0) or
+    (_player_obj.movement_type == 4 and _player_obj.last_movement_type_change_frame == 0)
   end
 
   function has_ended_attack(_player_obj)
@@ -40,7 +43,6 @@ function frame_advantage_update(_attacker, _defender)
   end
 
   if move_advantage.armed then
-
     if _attacker.superfreeze_decount > 0 then
       move_advantage.start_frame = move_advantage.start_frame + 1
     end
@@ -97,19 +99,20 @@ function frame_advantage_update(_attacker, _defender)
         if move_advantage.end_frame == nil and has_ended_attack(_attacker) then
           move_advantage.end_frame = frame_number
 
-          log(_attacker.prefix, "frame_advantage", string.format("end bf:%d js:%d", _attacker.busy_flag, to_bit(_attacker.is_in_jump_startup)))
+          log(_attacker.prefix, "frame_advantage",
+            string.format("end bf:%d js:%d", _attacker.busy_flag, to_bit(_attacker.is_in_jump_startup)))
         end
 
         if move_advantage.opponent_end_frame == nil and frame_number > move_advantage.hit_frame and has_ended_recovery(_defender) then
           log(_defender.prefix, "frame_advantage", string.format("end"))
           move_advantage.opponent_end_frame = frame_number
-        end 
+        end
       end
     end
 
     if (move_advantage.end_frame ~= nil and move_advantage.opponent_end_frame ~= nil) or (has_ended_attack(_attacker) and has_ended_recovery(_defender)) then
       if move_advantage.end_frame == nil then
-          move_advantage.end_frame = frame_number
+        move_advantage.end_frame = frame_number
       end
       move_advantage.armed = false
       log(_defender.prefix, "frame_advantage", string.format("unarmed"))
@@ -119,10 +122,10 @@ end
 
 function frame_advantage_display()
   if
-    move_advantage.armed == true or
-    move_advantage.player_id == nil or
-    move_advantage.start_frame == nil or
-    move_advantage.hitbox_start_frame == nil
+      move_advantage.armed == true or
+      move_advantage.player_id == nil or
+      move_advantage.start_frame == nil or
+      move_advantage.hitbox_start_frame == nil
   then
     return
   end
@@ -130,12 +133,12 @@ function frame_advantage_display()
   local _y = 49
   function display_line(_text, _value, _color)
     _color = _color or text_default_color
-    local _text_width = get_text_width(_text)
+    local _text_width = util_draw.get_text_width(_text)
     local _x = 0
     if move_advantage.player_id == 1 then
       _x = 51
     elseif move_advantage.player_id == 2 then
-      _x = screen_width - 65 - _text_width
+      _x = util_draw.screen_width - 65 - _text_width
     end
 
     gui.text(_x, _y, string.format(_text))
@@ -175,9 +178,10 @@ function frame_advantage_display()
 end
 
 function frame_advantage_reset()
-  move_advantage = 
+  move_advantage =
   {
     armed = false
   }
 end
+
 frame_advantage_reset()
