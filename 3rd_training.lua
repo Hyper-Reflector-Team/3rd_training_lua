@@ -2008,10 +2008,7 @@ end
 is_menu_open = false
 
 local function hyper_reflector_rendering()
-    if GLOBAL_isHyperReflectorOnline then
-        gui.text(10, 1, 'HYPER-REFLECTOR v0.0.1a', util_colors.gui.white,
-                 util_colors.input_history.unknown2)
-    end
+    if GLOBAL_isHyperReflectorOnline then gui.text(10, 1, 'HYPER-REFLECTOR v0.0.1a', util_colors.gui.white, util_colors.input_history.unknown2) end
     -- gui.text(100, 20, game_name, util_colors.gui.white,
     --          util_colors.input_history.unknown2)
 end
@@ -2387,7 +2384,7 @@ function on_gui()
         if log_enabled then _should_toggle = P1.input.released.start end
         _should_toggle = not log_start_locked and _should_toggle
 
-        --if _should_toggle and not GLOBAL_isHyperReflectorOnline then
+        -- if _should_toggle and not GLOBAL_isHyperReflectorOnline then
         if _should_toggle then
             is_menu_open = (not is_menu_open)
             if is_menu_open then
@@ -2426,11 +2423,13 @@ function on_gui()
     gui.box(0, 0, 0, 0, 0, 0) -- if we don't draw something, what we drawed from last frame won't be cleared
 end
 
--- registers
--- emu.registerstart(on_start)
--- emu.registerbefore(before_frame)
--- gui.register(on_gui)
--- savestate.registerload(on_load_state)
+if not GLOBAL_isHyperReflectorOnline then
+    -- registers
+    emu.registerstart(on_start)
+    emu.registerbefore(before_frame)
+    gui.register(on_gui)
+    savestate.registerload(on_load_state)
+end
 
 return {
     -- vars
@@ -2438,6 +2437,6 @@ return {
     -- funcs
     before_frame = before_frame,
     on_gui = on_gui,
-    on_load_state = on_load_state,
-    
+    on_load_state = on_load_state
+
 }
