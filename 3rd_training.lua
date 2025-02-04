@@ -28,6 +28,7 @@ require("src/frame_advantage")
 
 -- utils, these do not directly display, typically shared functionality consumed by modules.
 local util_draw = require("src/utils/draw")
+local util_colors = require("src/utils/colors")
 local image_tables = require("src/utils/image_tables")
 
 -- modules, these display something on the screen and may consume utils
@@ -1288,13 +1289,13 @@ training_settings = {
     stun_reset_delay = 20,
     display_input = true,
     display_gauges = false,
-    display_p1_input_history = false,
+    display_p1_input_history = true,
     display_p1_input_history_dyanamic = false,
-    display_p2_input_history = false,
+    display_p2_input_history = false, -- this seems bugged.
     display_attack_data = false,
     display_frame_advantage = false,
-    display_hitboxes = false,
-    display_distances = false,
+    display_hitboxes = true,
+    display_distances = true,
     mid_distance_height = 70,
     p1_distances_reference_point = 1,
     p2_distances_reference_point = 2,
@@ -1845,7 +1846,7 @@ if rom_name == "sfiii3nr1" then
     input.registerhotkey(3, hotkey3)
 end
 
-function before_frame()
+local function before_frame()
     -- update debug menu
     if debug_settings.debug_character ~= debug_move_menu_item.map_property then
         debug_move_menu_item.map_object = frame_data
@@ -2006,7 +2007,17 @@ end
 
 is_menu_open = false
 
+local function hyper_reflector_rendering()
+    if GLOBAL_isHyperReflectorOnline then
+        gui.text(10, 1, 'HYPER-REFLECTOR v0.0.1a', util_colors.gui.white,
+                 util_colors.input_history.unknown2)
+    end
+    -- gui.text(100, 20, game_name, util_colors.gui.white,
+    --          util_colors.input_history.unknown2)
+end
+
 function on_gui()
+    hyper_reflector_rendering()
     if P1.input.pressed.start then clear_printed_geometry() end
 
     module_character_select.draw_character_select()
@@ -2053,6 +2064,7 @@ function on_gui()
             end
         else
             if training_settings.display_p1_input_history then module_input_history.input_history_draw(module_input_history.input_history[1], 4, 49, false) end
+            -- TODO fix below code
             if training_settings.display_p2_input_history then module_input_history.input_history_draw(module_input_history.input_history[2], screen_width - 4, 49, true) end
         end
 
@@ -2375,6 +2387,7 @@ function on_gui()
         if log_enabled then _should_toggle = P1.input.released.start end
         _should_toggle = not log_start_locked and _should_toggle
 
+        --if _should_toggle and not GLOBAL_isHyperReflectorOnline then
         if _should_toggle then
             is_menu_open = (not is_menu_open)
             if is_menu_open then
@@ -2414,7 +2427,17 @@ function on_gui()
 end
 
 -- registers
-emu.registerstart(on_start)
-emu.registerbefore(before_frame)
-gui.register(on_gui)
-savestate.registerload(on_load_state)
+-- emu.registerstart(on_start)
+-- emu.registerbefore(before_frame)
+-- gui.register(on_gui)
+-- savestate.registerload(on_load_state)
+
+return {
+    -- vars
+    developer_mode = developer_mode,
+    -- funcs
+    before_frame = before_frame,
+    on_gui = on_gui,
+    on_load_state = on_load_state,
+    
+}
