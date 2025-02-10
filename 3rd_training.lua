@@ -2035,7 +2035,7 @@ is_menu_open = false
 
 local function hyper_reflector_rendering()
     if GLOBAL_isHyperReflectorOnline then 
-        gui.text(10, 1, 'HYPER-REFLECTOR v0.0.1a', util_colors.gui.white, util_colors.input_history.unknown2)
+        gui.text(10, 1, 'HYPER-REFLECTOR v0.1.0', util_colors.gui.white, util_colors.input_history.unknown2)
         end
     if not GLOBAL_isHyperReflectorOnline then 
         gui.text(10, 1, 'memory stuff', util_colors.gui.white, util_colors.input_history.unknown2)
