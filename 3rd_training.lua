@@ -2058,17 +2058,17 @@ end
 
 local function hyper_set_data()
         -- you can use this to force a super are selection, for example maybe you want to have the players lock in on the app instead of the game?
-        memory.writebyte(0x0201138B, 2)
-        -- char
-        memory.writebyte(0x02011387, 3)
-        -- color
-        memory.writebyte(0x02015683, 6)
-        -- stage select
-        memory.writebyte(0x02026BB0, 8)
+        -- memory.writebyte(0x0201138B, 2)
+        -- char - currently set to yun
+        -- memory.writebyte(0x02011387, 3)
+        -- color - current set to ex
+        -- memory.writebyte(0x02015683, 6)
+        -- stage select currently set to elena stage
+        -- memory.writebyte(0x02026BB0, 8)
 end
 
 function on_gui()
-    hyper_reflector_rendering()
+    -- hyper_reflector_rendering()
     if P1.input.pressed.start then clear_printed_geometry() end
 
     module_character_select.draw_character_select()
@@ -2474,7 +2474,7 @@ function on_gui()
         menu_stack_draw()
     end
     
-    hyper_set_data()
+    -- hyper_set_data()
     gui.box(0, 0, 0, 0, 0, 0) -- if we don't draw something, what we drawed from last frame won't be cleared
 end
 

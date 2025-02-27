@@ -98,10 +98,7 @@ GLOBAL_isHyperReflectorOnline = true
 emu.registerbefore(check_commands) -- Runs after each frame
 -- gui.register(on_gui)
 
--- registers for 3rd training
--- emu.registerstart(third_training.on_start())
-
 -- UNCOMMENT below lines  for training mode online
--- emu.registerbefore(third_training.before_frame)
--- gui.register(third_training.on_gui)
+emu.registerbefore(third_training.before_frame)
+gui.register(third_training.on_gui)
 -- pressing start should not pause the emulator this is not good =0
