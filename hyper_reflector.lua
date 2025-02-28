@@ -7,6 +7,7 @@ local command_file = "../../hyper_write_commands.txt"
 local ext_command_file = "../../hyper_read_commands.txt" -- this is for sending back commands to electron.
 local match_track_file = "../../hyper_track_match.txt"
 
+-- test commit
 -- state
 local game_name = ""
 local previous_meter = 0; -- for some reason meter set to 70 on character select 
