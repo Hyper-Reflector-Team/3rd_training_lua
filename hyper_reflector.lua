@@ -21,18 +21,17 @@ end
 -- match state
 local match_total_meter_gained = 0;
 
+-- Lua writes current stat tracking to a text file here
 function GLOBAL_read_stat_memory()
     -- make sure we are in a match before we read / write to the file.
     if not check_in_match() then return end
     -- memory reads
     local current_meter = memory.readbyte(0x020695B5)
-   
+
     -- file open to write
     local file = io.open(match_track_file, "a")
     if file then
-        if current_meter <= previous_meter then
-            previous_meter = current_meter
-        end
+        if current_meter <= previous_meter then previous_meter = current_meter end
         local meter_gained = current_meter - previous_meter
         if meter_gained > 0 then -- compare our meters
             print(meter_gained)
@@ -49,6 +48,7 @@ function GLOBAL_read_stat_memory()
     end
 end
 
+-- ELECTRON sends commands here, lua reads them and then then sends ifno back via text file
 local function check_commands()
     GLOBAL_read_stat_memory()
     local file = io.open(command_file, "r")
@@ -92,11 +92,33 @@ local function check_commands()
     end
 end
 
+-- We write to the stat tracking file here
+local function game_closing()
+    -- file open to write
+    local file = io.open(match_track_file, "a")
+    if file then
+        file:write('\n -i-game-ended')
+        file:close()
+    end
+end
+
+local function game_starting()
+    -- file open to write
+    local file = io.open(match_track_file, "a")
+    if file then
+        file:write('\n -i-game-started')
+        file:close()
+    end
+end
+
 -- hyper-reflector commands -- this is actually global state
 GLOBAL_isHyperReflectorOnline = true
-
+emu.registerstart(game_starting)
+emu.registerexit(game_closing)
 emu.registerbefore(check_commands) -- Runs after each frame
 -- gui.register(on_gui)
+
+
 
 -- UNCOMMENT below lines  for training mode online
 -- emu.registerbefore(third_training.before_frame)
