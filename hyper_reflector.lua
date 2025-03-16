@@ -7,6 +7,9 @@ local command_file = "../../hyper_write_commands.txt"
 local ext_command_file = "../../hyper_read_commands.txt" -- this is for sending back commands to electron.
 local match_track_file = "../../hyper_track_match.txt"
 
+-- game state 
+require("src/gamestate")
+
 -- state
 local game_name = ""
 local previous_meter = 0; -- for some reason meter set to 70 on character select 
@@ -15,6 +18,42 @@ print(previous_meter)
 
 local function check_in_match()
     local match_state = memory.readbyte(0x020154A7);
+    gamestate_read()
+
+    -- wow we can character lock the menu!
+    -- p1
+    -- memory.writebyte(0x020154CF, 0x04) -- 0 to 6 -- character row
+    -- memory.writebyte(0x0201566B, 0x01) -- 0 to 2 -- character colun
+    -- -- p2
+    -- memory.writebyte(0x020154D1, 0x06) -- 0 to 6 -- character row
+    -- memory.writebyte(0x0201566D, 0x01) -- 0 to 2 -- character colun
+    -- 
+    
+
+    -- print(match_state)
+    -- 6 is post last hit
+    -- 8 is transition from win to black screen
+    -- 1 is pre match freeze state
+    -- 2 is in fight
+
+    -- memory addresses 
+    -- 0x2867a == start ? maybe timer?
+    -- working player win count memory
+    -- local p1_win = memory.readdword(0x02016cd6)
+    -- local p2_win = memory.readdword(0x02016cd4)
+    -- if either are the value 65536 i believe this means the other lost a streak
+    -- print(p1_win)
+    -- local start = memory.readbyte(0x0202867a) -- doesnt work, came from the the detectors code
+
+    -- timers
+    -- working match timer
+    -- match_timer = memory.readbyte(0x02011377)
+    -- working char select timer
+    -- local char_select_timer = memory.readbyte(0x020154FB)
+
+    -- parry related
+
+    -- print(match_timer)
     return match_state == 2
 end
 
@@ -27,6 +66,10 @@ function GLOBAL_read_stat_memory()
     if not check_in_match() then return end
     -- memory reads
     local current_meter = memory.readbyte(0x020695B5)
+    -- test to see match end
+    -- local match_state = memory.readbyte(0x020154A7);
+    local p1_win = memory.readbyte(0x02016cd6)
+    -- print(match_state)
 
     -- file open to write
     local file = io.open(match_track_file, "a")
@@ -36,6 +79,7 @@ function GLOBAL_read_stat_memory()
         if meter_gained > 0 then -- compare our meters
             print(meter_gained)
             print(previous_meter, current_meter)
+            
             -- here would could make an api call 
             match_total_meter_gained = match_total_meter_gained + meter_gained
             previous_meter = current_meter
@@ -43,6 +87,8 @@ function GLOBAL_read_stat_memory()
             file:write(match_total_meter_gained)
             file:write('\n p1-total-meter-gained:')
             file:write(match_total_meter_gained)
+            file:write('\n did p1 win?:')
+            file:write(p1_win)
         end
         file:close()
     end

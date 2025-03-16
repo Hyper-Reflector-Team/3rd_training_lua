@@ -519,7 +519,7 @@ function read_player_vars(_player_obj)
         end
       end
 
-      -- if behind, always go th the range begin, else go at end unless it has been wrapping
+      -- if behind, always go the range begin, else go at end unless it has been wrapping
       if _resync_range_begin >= 0 then
         if _player_obj.relevant_animation_frame < _resync_range_begin then
           _resync_target = _resync_range_begin
@@ -606,6 +606,7 @@ function read_player_vars(_player_obj)
   if _player_obj.received_connection and _player_obj.received_connection_marker ~= 0xFFF1 and _total_received_hit_count_diff == 0 then --0xFFF1 is parry
     _player_obj.has_just_blocked = true
     log(_player_obj.prefix, "fight", "block")
+    print('HR - Blocked attack? ->', _player_obj.prefix)
     if _debug_state_variables then
       print(string.format("%d - %s blocked", frame_number, _player_obj.prefix))
     end
@@ -615,6 +616,7 @@ function read_player_vars(_player_obj)
   _player_obj.has_just_been_hit = false
   if _total_received_hit_count_diff > 0 then
     _player_obj.has_just_been_hit = true
+    print('HR - Hit by an attack?', _player_obj.prefix)
     log(_player_obj.prefix, "fight", "hit")
   end
 
@@ -622,6 +624,7 @@ function read_player_vars(_player_obj)
   if _player_obj.received_connection and _player_obj.received_connection_marker == 0xFFF1 and _total_received_hit_count_diff == 0 then
     _player_obj.has_just_parried = true
     log(_player_obj.prefix, "fight", "parry")
+    print('HR - successful parry? ->', _player_obj.prefix)
     if _debug_state_variables then print(string.format("%d - %s parried", frame_number, _player_obj.prefix)) end
   end
 
@@ -663,12 +666,15 @@ function read_player_vars(_player_obj)
 
   if not _previous_is_in_air_recovery and _player_obj.is_in_air_recovery then
     log(_player_obj.prefix, "fight", string.format("air recovery 1"))
+    print('HR - Reset opponent ->', _player_obj.prefix)
     if _debug_air_recovery then
       print(string.format("%s entered air recovery", _player_obj.prefix))
+      
     end
   end
   if _previous_is_in_air_recovery and not _player_obj.is_in_air_recovery then
     log(_player_obj.prefix, "fight", string.format("air recovery 0"))
+    print('HR - Landed after reset ->', _player_obj.prefix)
     if _debug_air_recovery then
       print(string.format("%s exited air recovery", _player_obj.prefix))
     end
@@ -748,6 +754,7 @@ function read_player_vars(_player_obj)
       _player_obj.is_past_wakeup_frame = false
       _player_obj.wakeup_time = 0
       _player_obj.wakeup_animation = _player_obj.animation
+      print('HR - knock down? ->', _player_obj.prefix)
       if debug_wakeup then
         print(string.format("%d - %s wakeup started", frame_number, _player_obj.prefix))
       end
@@ -760,6 +767,7 @@ function read_player_vars(_player_obj)
       _player_obj.is_past_wakeup_frame = true
       _player_obj.wakeup_time = 0
       _player_obj.wakeup_animation = _player_obj.animation
+      print('HR - quick rise? ->', _player_obj.prefix)
       if debug_wakeup then
         print(string.format("%d - %s fast wakeup started", frame_number, _player_obj.prefix))
       end
@@ -774,6 +782,7 @@ function read_player_vars(_player_obj)
     end
 
     if _player_obj.is_wakingup and _previous_posture == 0x26 and _player_obj.posture ~= 0x26 then
+      print('HR - fully woke up ->', _player_obj.prefix)
       if debug_wakeup then
         print(string.format("%d - %s wake up: %d, %s, %d", frame_number, _player_obj.prefix, to_bit(_player_obj.is_fast_wakingup), _player_obj.wakeup_animation, _player_obj.wakeup_time))
       end
@@ -798,6 +807,7 @@ function read_player_vars(_player_obj)
   end
 
   if not _previous_is_in_jump_startup and _player_obj.is_in_jump_startup then
+    print('HR - jumped? ->', _player_obj.prefix)
     _player_obj.last_jump_startup_duration = 0
     _player_obj.last_jump_startup_frame = frame_number
   end
