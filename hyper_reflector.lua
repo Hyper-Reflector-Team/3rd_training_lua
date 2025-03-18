@@ -6,6 +6,7 @@ require("src/tools") -- TODO: refactor tools to export;
 local command_file = "../../hyper_write_commands.txt"
 local ext_command_file = "../../hyper_read_commands.txt" -- this is for sending back commands to electron.
 local match_track_file = "../../hyper_track_match.txt"
+local module_character_select = require("src/modules/character_select")
 
 -- game state 
 require("src/gamestate")
@@ -84,9 +85,13 @@ local p1_char
 local p2_char
 local p1_super
 local p2_super
+local wasInMatch = false
+
 local function check_in_match()
     local match_state = memory.readbyte(0x020154A7);
+    print(match_state)
     if match_state == 1 and stat_file == nil then
+        wasInMatch = true
         -- initialize all the values we want to write like character and super are
         p1_char = memory.readbyte(0x02011387)
         p2_char = memory.readbyte(0x02011388)
@@ -97,6 +102,12 @@ local function check_in_match()
         stat_file = io.open(match_track_file, "a")
     end
     gamestate_read() -- read game state every frame.
+    -- takes us to character select screen
+    if match_state == 9 and wasInMatch then 
+        -- TODO I want to be able to write the previos scores and the grade to memory, for fun
+        module_character_select.start_character_select_sequence()
+        wasInMatch = false
+    end
     return match_state == 2
 end
 
@@ -126,13 +137,15 @@ local function check_wins()
             stat_file:write('\n p1-win:true')
             stat_file:close()
             stat_file = nil
+            -- 0x0201553D
             local front_end_reader = io.open(ext_command_file, "w")
             if front_end_reader then
                 front_end_reader:write('read-tracking-file')
                 front_end_reader:close()
             end
         end
-        player_1_win_count = player_1_win_count + 1
+        -- TODO change this back once we can write the score back to memory
+        -- player_1_win_count = player_1_win_count + 1
     end
     if p2_wins > player_2_win_count and p2_wins < 100 then
         -- reset opponent win count
@@ -156,7 +169,8 @@ local function check_wins()
                 front_end_reader:close()
             end
         end
-        player_2_win_count = player_2_win_count + 1
+        -- TODO change this back once we can write the score back to memory
+        -- player_2_win_count = player_2_win_count + 1
     end
 end
 
@@ -239,6 +253,9 @@ local function game_closing()
 end
 
 local function game_starting()
+    -- erase all data on game start, just in case
+    io.open(match_track_file,"w"):close()
+    -- write game start
     local stat_file = io.open(match_track_file, "a")
     if stat_file then
         stat_file:write('')
