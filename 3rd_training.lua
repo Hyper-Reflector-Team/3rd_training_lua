@@ -2481,9 +2481,9 @@ end
 if not GLOBAL_isHyperReflectorOnline then
     -- registers
     emu.registerstart(on_start)
-    -- emu.registerbefore(before_frame)
-    -- gui.register(on_gui)
-    -- savestate.registerload(on_load_state)
+    emu.registerbefore(before_frame)
+    gui.register(on_gui)
+    savestate.registerload(on_load_state)
 end
 
 return {

@@ -1,29 +1,22 @@
 local util_draw = require("src/utils/draw")
 
 -- # enums
-distance_display_mode = { "none", "simple", "advanced" }
+distance_display_mode = {"none", "simple", "advanced"}
 
-distance_display_reference_point = { "origin", "hurtbox" }
+distance_display_reference_point = {"origin", "hurtbox"}
 
 -- # api
-
--- push a persistent set of hitboxes to be drawn on the screen each frame
-function print_hitboxes(_pos_x, _pos_y, _flip_x, _boxes, _filter, _dilation)
-    local _g = {
-        type = "hitboxes",
-        x = _pos_x,
-        y = _pos_y,
-        flip_x = _flip_x,
-        boxes = _boxes,
-        filter = _filter,
-        dilation = _dilation
-    }
-    table.insert(printed_geometry, _g)
+if not GLOBAL_isHyperReflectorOnline then
+    -- push a persistent set of hitboxes to be drawn on the screen each frame
+    function print_hitboxes(_pos_x, _pos_y, _flip_x, _boxes, _filter, _dilation)
+        local _g = {type = "hitboxes", x = _pos_x, y = _pos_y, flip_x = _flip_x, boxes = _boxes, filter = _filter, dilation = _dilation}
+        table.insert(printed_geometry, _g)
+    end
 end
 
 -- push a persistent point to be drawn on the screen each frame
 function print_point(_pos_x, _pos_y, _color)
-    local _g = { type = "point", x = _pos_x, y = _pos_y, color = _color }
+    local _g = {type = "point", x = _pos_x, y = _pos_y, color = _color}
     table.insert(printed_geometry, _g)
 end
 
@@ -36,8 +29,7 @@ function display_draw_printed_geometry()
     -- printed geometry
     for _i, _geometry in ipairs(printed_geometry) do
         if _geometry.type == "hitboxes" then
-            util_draw.draw_hitboxes(_geometry.x, _geometry.y, _geometry.flip_x,
-                _geometry.boxes, _geometry.filter, _geometry.dilation)
+            util_draw.draw_hitboxes(_geometry.x, _geometry.y, _geometry.flip_x, _geometry.boxes, _geometry.filter, _geometry.dilation)
         elseif _geometry.type == "point" then
             util_draw.draw_point(_geometry.x, _geometry.y, _geometry.color)
         end
@@ -46,13 +38,9 @@ end
 
 function display_draw_hitboxes()
     -- players
-    for _id, _obj in pairs(player_objects) do
-        util_draw.draw_hitboxes(_obj.pos_x, _obj.pos_y, _obj.flip_x, _obj.boxes)
-    end
+    for _id, _obj in pairs(player_objects) do util_draw.draw_hitboxes(_obj.pos_x, _obj.pos_y, _obj.flip_x, _obj.boxes) end
     -- projectiles
-    for _id, _obj in pairs(projectiles) do
-        util_draw.draw_hitboxes(_obj.pos_x, _obj.pos_y, _obj.flip_x, _obj.boxes)
-    end
+    for _id, _obj in pairs(projectiles) do util_draw.draw_hitboxes(_obj.pos_x, _obj.pos_y, _obj.flip_x, _obj.boxes) end
 end
 
 function display_draw_life(_player_object)
@@ -76,9 +64,7 @@ function display_draw_meter(_player_object)
 
     local _gauge = _player_object.meter_gauge
 
-    if _player_object.meter_count == _player_object.max_meter_count then
-        _gauge = _player_object.max_meter_gauge
-    end
+    if _player_object.meter_count == _player_object.max_meter_count then _gauge = _player_object.max_meter_gauge end
 
     local _t = string.format("%d/%d", _gauge, _player_object.max_meter_gauge)
 
@@ -95,8 +81,7 @@ function display_draw_stun_gauge(_player_object)
     local _x = 0
     local _y = 29
 
-    local _t = string.format("%d/%d", _player_object.stun_bar,
-        _player_object.stun_max)
+    local _t = string.format("%d/%d", _player_object.stun_bar, _player_object.stun_max)
 
     if _player_object.id == 1 then
         _x = 118
@@ -154,30 +139,22 @@ function display_draw_bonuses(_player_object)
     end
 end
 
-function draw_horizontal_text_segment(_p1_x, _p2_x, _y, _text, _line_color,
-                                      _edges_height)
+function draw_horizontal_text_segment(_p1_x, _p2_x, _y, _text, _line_color, _edges_height)
     _edges_height = _edges_height or 3
     local _half_distance_str_width = util_draw.get_text_width(_text) * 0.5
 
     local _center_x = (_p1_x + _p2_x) * 0.5
-    util_draw.draw_horizontal_line(math.min(_p1_x, _p2_x),
-        _center_x - _half_distance_str_width - 3, _y,
-        _line_color, 1)
-    util_draw.draw_horizontal_line(_center_x + _half_distance_str_width + 3,
-        math.max(_p1_x, _p2_x), _y, _line_color, 1)
-    gui.text(_center_x - _half_distance_str_width, _y - 3, _text,
-        text_default_color, text_default_border_color)
+    util_draw.draw_horizontal_line(math.min(_p1_x, _p2_x), _center_x - _half_distance_str_width - 3, _y, _line_color, 1)
+    util_draw.draw_horizontal_line(_center_x + _half_distance_str_width + 3, math.max(_p1_x, _p2_x), _y, _line_color, 1)
+    gui.text(_center_x - _half_distance_str_width, _y - 3, _text, text_default_color, text_default_border_color)
 
     if _edges_height > 0 then
-        util_draw.draw_vertical_line(_p1_x, _y - _edges_height, _y + _edges_height,
-            _line_color, 1)
-        util_draw.draw_vertical_line(_p2_x, _y - _edges_height, _y + _edges_height,
-            _line_color, 1)
+        util_draw.draw_vertical_line(_p1_x, _y - _edges_height, _y + _edges_height, _line_color, 1)
+        util_draw.draw_vertical_line(_p2_x, _y - _edges_height, _y + _edges_height, _line_color, 1)
     end
 end
 
-function display_draw_distances(_p1_object, _p2_object, _mid_distance_height,
-                                _p1_reference_point, _p2_reference_point)
+function display_draw_distances(_p1_object, _p2_object, _mid_distance_height, _p1_reference_point, _p2_reference_point)
     function _find_closest_box_at_height(_player_obj, _height, _box_types)
         local _px = _player_obj.pos_x
         local _py = _player_obj.pos_y
@@ -211,79 +188,49 @@ function display_draw_distances(_p1_object, _p2_object, _mid_distance_height,
     end
 
     function _get_screen_line_between_boxes(_box1_l, _box1_r, _box2_l, _box2_r)
-        if not ((_box1_l >= _box2_r) or (_box1_r <= _box2_l)) then
-            return false
-        end
+        if not ((_box1_l >= _box2_r) or (_box1_r <= _box2_l)) then return false end
 
         if _box1_l < _box2_l then
-            return true, util_draw.game_to_screen_space_x(_box1_r),
-                util_draw.game_to_screen_space_x(_box2_l)
+            return true, util_draw.game_to_screen_space_x(_box1_r), util_draw.game_to_screen_space_x(_box2_l)
         else
-            return true, util_draw.game_to_screen_space_x(_box2_r),
-                util_draw.game_to_screen_space_x(_box1_l)
+            return true, util_draw.game_to_screen_space_x(_box2_r), util_draw.game_to_screen_space_x(_box1_l)
         end
     end
 
-    function _display_distance(_p1_object, _p2_object, _height, _box_types,
-                               _p1_reference_point, _p2_reference_point, _color)
-        local _y = math.min(_p1_object.pos_y + _height,
-            _p2_object.pos_y + _height)
+    function _display_distance(_p1_object, _p2_object, _height, _box_types, _p1_reference_point, _p2_reference_point, _color)
+        local _y = math.min(_p1_object.pos_y + _height, _p2_object.pos_y + _height)
         local _p1_l, _p1_r, _p2_l, _p2_r
         local _p1_result, _p2_result = false, false
-        if _p1_reference_point == 2 then
-            _p1_result, _p1_l, _p1_r = _find_closest_box_at_height(_p1_object,
-                _y,
-                _box_types)
-        end
-        if not _p1_result then
-            _p1_l, _p1_r = _p1_object.pos_x, _p1_object.pos_x
-        end
-        if _p2_reference_point == 2 then
-            _p2_result, _p2_l, _p2_r = _find_closest_box_at_height(_p2_object,
-                _y,
-                _box_types)
-        end
-        if not _p2_result then
-            _p2_l, _p2_r = _p2_object.pos_x, _p2_object.pos_x
-        end
+        if _p1_reference_point == 2 then _p1_result, _p1_l, _p1_r = _find_closest_box_at_height(_p1_object, _y, _box_types) end
+        if not _p1_result then _p1_l, _p1_r = _p1_object.pos_x, _p1_object.pos_x end
+        if _p2_reference_point == 2 then _p2_result, _p2_l, _p2_r = _find_closest_box_at_height(_p2_object, _y, _box_types) end
+        if not _p2_result then _p2_l, _p2_r = _p2_object.pos_x, _p2_object.pos_x end
 
-        local _line_result, _screen_l, _screen_r =
-            _get_screen_line_between_boxes(_p1_l, _p1_r, _p2_l, _p2_r)
+        local _line_result, _screen_l, _screen_r = _get_screen_line_between_boxes(_p1_l, _p1_r, _p2_l, _p2_r)
 
         if _line_result then
             local _screen_y = util_draw.game_to_screen_space_y(_y)
             local _str = string.format("%d", math.abs(_screen_r - _screen_l))
-            draw_horizontal_text_segment(_screen_l, _screen_r, _screen_y, _str,
-                _color)
+            draw_horizontal_text_segment(_screen_l, _screen_r, _screen_y, _str, _color)
         end
     end
 
     -- throw
-    _display_distance(_p1_object, _p2_object, 2, { throwable = true },
-        _p1_reference_point, _p2_reference_point, 0x08CF00FF)
+    _display_distance(_p1_object, _p2_object, 2, {throwable = true}, _p1_reference_point, _p2_reference_point, 0x08CF00FF)
 
     -- low and mid
     local _hurtbox_types = {}
     _hurtbox_types["vulnerability"] = true
     _hurtbox_types["ext. vulnerability"] = true
-    _display_distance(_p1_object, _p2_object, 10, _hurtbox_types,
-        _p1_reference_point, _p2_reference_point, 0x00E7FFFF)
-    _display_distance(_p1_object, _p2_object, _mid_distance_height,
-        _hurtbox_types, _p1_reference_point, _p2_reference_point,
-        0x00E7FFFF)
+    _display_distance(_p1_object, _p2_object, 10, _hurtbox_types, _p1_reference_point, _p2_reference_point, 0x00E7FFFF)
+    _display_distance(_p1_object, _p2_object, _mid_distance_height, _hurtbox_types, _p1_reference_point, _p2_reference_point, 0x00E7FFFF)
 
     -- player positions
     local _line_color = 0xFFFF63FF
-    local _p1_screen_x, _p1_screen_y = util_draw.game_to_screen_space(
-        _p1_object.pos_x, _p1_object.pos_y)
-    local _p2_screen_x, _p2_screen_y = util_draw.game_to_screen_space(
-        _p2_object.pos_x, _p2_object.pos_y)
+    local _p1_screen_x, _p1_screen_y = util_draw.game_to_screen_space(_p1_object.pos_x, _p1_object.pos_y)
+    local _p2_screen_x, _p2_screen_y = util_draw.game_to_screen_space(_p2_object.pos_x, _p2_object.pos_y)
     util_draw.draw_point(_p1_screen_x, _p1_screen_y, _line_color)
     util_draw.draw_point(_p2_screen_x, _p2_screen_y, _line_color)
-    gui.text(_p1_screen_x + 3, _p1_screen_y + 2,
-        string.format("%d:%d", _p1_object.pos_x, _p1_object.pos_y),
-        text_default_color, text_default_border_color)
-    gui.text(_p2_screen_x + 3, _p2_screen_y + 2,
-        string.format("%d:%d", _p2_object.pos_x, _p2_object.pos_y),
-        text_default_color, text_default_border_color)
+    gui.text(_p1_screen_x + 3, _p1_screen_y + 2, string.format("%d:%d", _p1_object.pos_x, _p1_object.pos_y), text_default_color, text_default_border_color)
+    gui.text(_p2_screen_x + 3, _p2_screen_y + 2, string.format("%d:%d", _p2_object.pos_x, _p2_object.pos_y), text_default_color, text_default_border_color)
 end
