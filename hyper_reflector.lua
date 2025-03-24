@@ -1,8 +1,8 @@
 GLOBAL_isHyperReflectorOnline = true
 -- BEFORE BUILDING COPY THIS FILE TO lua/3rd_training_lua/ in order for the scripts to use the same root directories.
--- local third_training = require("3rd_training")
--- local util_draw = require("src/utils/draw");
--- local util_colors = require("src/utils/colors")
+local third_training = require("3rd_training")
+local util_draw = require("src/utils/draw");
+local util_colors = require("src/utils/colors")
 require("src/tools") -- TODO: refactor tools to export;
 -- local command_file = "../../hyper_write_commands.txt"
 local ext_command_file = "../../hyper_read_commands.txt" -- this is for sending back commands to electron.
