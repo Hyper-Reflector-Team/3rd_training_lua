@@ -86,97 +86,97 @@ local p1_char
 local p2_char
 local p1_super
 local p2_super
-local wasInMatch = false
+-- local wasInMatch = false
 
 -- match state
 local match_total_meter_gained = 0;
 local player_1_win_count = 0;
 local player_2_win_count = 0;
-local frameTimer = 0;
-local pressedStart = 0;
-local inputs = joypad.get();
-local previousMatchState = 9;
-local down_inputs -- used for checking if we reset in the 0 or 9  match state
+-- local frameTimer = 0;
+-- local pressedStart = 0;
+-- local inputs = joypad.get();
+-- local previousMatchState = 9;
+-- local down_inputs -- used for checking if we reset in the 0 or 9  match state
 
 local function check_in_match()
     local match_state = memory.readbyte(0x020154A7);
     -- print(match_state)
     if match_state == 0 then -- need to mash to continues
-        down_inputs = joypad.getdown()
-        if down_inputs['Reset'] == true or down_inputs['Diagnostic'] == true then
-            pressedStart = 0
-            frameTimer = 0
-        end
+        -- down_inputs = joypad.getdown()
+        -- if down_inputs['Reset'] == true or down_inputs['Diagnostic'] == true then
+        --     pressedStart = 0
+        --     frameTimer = 0
+        -- end
         -- this state indicates the game was reset
         player_1_win_count = 0
         player_2_win_count = 0
-        while frameTimer >= 2 and pressedStart <= 80 do
-            inputs['P1 Start'] = true
-            inputs['P2 Start'] = true
-            inputs['P1 Weak Punch'] = true
-            inputs['P2 Weak Punch'] = true
-            joypad.set(inputs)
-            frameTimer = 0
-            pressedStart = pressedStart + 1
-        end
-        frameTimer = frameTimer + 1
-        if not previousMatchState == 0 then
-            pressedStart = 0
-            previousMatchState = 0
-        end
+        -- while frameTimer >= 2 and pressedStart <= 80 do
+        --     inputs['P1 Start'] = true
+        --     inputs['P2 Start'] = true
+        --     inputs['P1 Weak Punch'] = true
+        --     inputs['P2 Weak Punch'] = true
+        --     joypad.set(inputs)
+        --     frameTimer = 0
+        --     pressedStart = pressedStart + 1
+        -- end
+        -- frameTimer = frameTimer + 1
+        -- if not previousMatchState == 0 then
+        --     pressedStart = 0
+        --     previousMatchState = 0
+        -- end
         return
     end
 
     if match_state == 7 then -- need to mash to continues
         -- prevent start from being pressed
-        while frameTimer >= 2 and pressedStart <= 80 do
-            inputs['P1 Start'] = true
-            inputs['P2 Start'] = true
-            joypad.set(inputs)
-            frameTimer = 0
-            pressedStart = pressedStart + 1
-        end
-        frameTimer = frameTimer + 1
-        if not previousMatchState == 7 then
-            pressedStart = 0
-            previousMatchState = 7
-        end
+        -- while frameTimer >= 2 and pressedStart <= 80 do
+        --     inputs['P1 Start'] = true
+        --     inputs['P2 Start'] = true
+        --     joypad.set(inputs)
+        --     frameTimer = 0
+        --     pressedStart = pressedStart + 1
+        -- end
+        -- frameTimer = frameTimer + 1
+        -- if not previousMatchState == 7 then
+        --     pressedStart = 0
+        --     previousMatchState = 7
+        -- end
         return
     end
 
     if match_state == 8 then -- need to mash to continues
-        while frameTimer >= 2 do
-            inputs['P1 Start'] = true
-            inputs['P2 Start'] = true
-            joypad.set(inputs)
-            frameTimer = 0
-            pressedStart = pressedStart + 1
-        end
-        frameTimer = frameTimer + 1
-        if not previousMatchState == 8 then
-            pressedStart = 0
-            previousMatchState = 8
-        end
+        -- while frameTimer >= 2 do
+        --     inputs['P1 Start'] = true
+        --     inputs['P2 Start'] = true
+        --     joypad.set(inputs)
+        --     frameTimer = 0
+        --     pressedStart = pressedStart + 1
+        -- end
+        -- frameTimer = frameTimer + 1
+        -- if not previousMatchState == 8 then
+        --     pressedStart = 0
+        --     previousMatchState = 8
+        -- end
         return
     end
 
     if match_state == 9 then -- this is initial char select
-        down_inputs = joypad.getdown()
-        if down_inputs['Reset'] == true or down_inputs['Diagnostic'] == true then
-            pressedStart = 0
-            frameTimer = 0
-        end
-        if not previousMatchState == 9 then
-            pressedStart = 0
-            previousMatchState = 9
-        end
+        -- down_inputs = joypad.getdown()
+        -- if down_inputs['Reset'] == true or down_inputs['Diagnostic'] == true then
+        --     pressedStart = 0
+        --     frameTimer = 0
+        -- end
+        -- if not previousMatchState == 9 then
+        --     pressedStart = 0
+        --     previousMatchState = 9
+        -- end
         return
     end
 
     -- at the start of a match
     if match_state == 1 and stat_file == nil then
-        frameTimer = 0
-        wasInMatch = true
+        -- frameTimer = 0
+        -- wasInMatch = true
         -- initialize all the values we want to write like character and super are
         p1_char = memory.readbyte(0x02011387)
         p2_char = memory.readbyte(0x02011388)
@@ -185,10 +185,10 @@ local function check_in_match()
         print(p1_char, '---', p2_char)
         print(p1_super, '---', p2_super)
         stat_file = io.open(match_track_file, "a")
-        if not previousMatchState == 1 then
-            pressedStart = 0
-            previousMatchState = 1
-        end
+        -- if not previousMatchState == 1 then
+        --     pressedStart = 0
+        --     previousMatchState = 1
+        -- end
         return
     end
 
@@ -215,8 +215,8 @@ local function check_in_match()
     --     -- wasInMatch = false
     -- end
     -- gamestate_read() -- read game state every frame.
-    previousMatchState = 2
-    pressedStart = 0
+    -- previousMatchState = 2
+    -- pressedStart = 0
     return match_state == 2
 end
 
