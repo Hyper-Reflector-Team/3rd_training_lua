@@ -97,6 +97,26 @@ local player_2_win_count = 0;
 -- local inputs = joypad.get();
 -- local previousMatchState = 9;
 -- local down_inputs -- used for checking if we reset in the 0 or 9  match state
+local function hyper_reflector_rendering()
+    if GLOBAL_isHyperReflectorOnline then gui.text(10, 1, 'HYPER-REFLECTOR v0.2.2a', util_colors.gui.white, util_colors.input_history.unknown2) end
+    -- if GLOBAL_isHyperReflectorOnline then
+    --     gui.text(10, 1, 'memory stuff', util_colors.gui.white, util_colors.input_history.unknown2)
+    --     -- current guage int? we can use this to track how much meter the player has spent / gained
+    --     gui.text(20, 8, memory.readbyte(0x020695B5), util_colors.gui.white, util_colors.input_history.unknown2)
+    --     -- current meter count ie: a full number change on the ui?
+    --     gui.text(10, 8, memory.readbyte(0x020286AB), util_colors.gui.white, util_colors.input_history.unknown2)
+    --     -- current character p1
+    --     gui.text(50, 8, memory.readbyte(0x02011387), util_colors.gui.white, util_colors.input_history.unknown2)
+    --     gui.text(58, 8, memory.readbyte(0x02011388), util_colors.gui.white, util_colors.input_history.unknown2)
+    --     -- super art selected
+    --     gui.text(58, 20, memory.readbyte(0x0201138B), util_colors.gui.white, util_colors.input_history.unknown2)
+    --     -- combo count
+    --     gui.text(10, 20, memory.readbyte(0x020696C5), util_colors.gui.white, util_colors.input_history.unknown2)
+    -- end
+
+    -- gui.text(100, 20, game_name, util_colors.gui.white,
+    --          util_colors.input_history.unknown2)
+end
 
 local function check_in_match()
     local match_state = memory.readbyte(0x020154A7);
@@ -374,7 +394,7 @@ end
 emu.registerstart(game_starting)
 emu.registerexit(game_closing)
 emu.registerbefore(GLOBAL_read_stat_memory) -- Runs after each frame
--- gui.register(on_gui)
+gui.register(hyper_reflector_rendering)
 
 -- UNCOMMENT below lines  for training mode online
 -- emu.registerbefore(third_training.before_frame)
