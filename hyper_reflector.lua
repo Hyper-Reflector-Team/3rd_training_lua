@@ -194,18 +194,21 @@ local function check_in_match()
         player_2_win_count = p2_wins
         -- print('match was reset correctly')
         io.open(match_track_file, "w"):close()
-        p1_char = memory.readbyte(0x02011387)
-        p2_char = memory.readbyte(0x02011388)
-        p1_super = memory.readbyte(0x020154D3)
-        p2_super = memory.readbyte(0x020154D5)
-        -- print(p1_char, '---', p2_char)
-        -- print(p1_super, '---', p2_super)
         stat_file = io.open(match_track_file, "a")
         if stat_file then
             stat_file:write('\n -i-game-match', match_count) -- is not registered until the end of the set
         end
         match_initialized = true
         return
+    end
+
+    if match_state == 2 then
+        p1_char = memory.readbyte(0x02011387)
+        p2_char = memory.readbyte(0x02011388)
+        p1_super = memory.readbyte(0x020154D3)
+        p2_super = memory.readbyte(0x020154D5)
+        -- print(p1_char, '---', p2_char)
+        -- print(p1_super, '---', p2_super)
     end
 
     if match_state == 6 then p1_previous_meter = 0 end
