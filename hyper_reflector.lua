@@ -14,7 +14,27 @@ require("src/gamestate")
 
 -- state
 local game_name = ""
-local previous_meter = 0; -- for some reason meter set to 70 on character select 
+local p1_previous_meter = 0; -- for some reason meter set to 70 on character select 
+local match_count = 0;
+local stat_file
+-- match related
+local match_just_ended = false
+local p1_char
+local p2_char
+local p1_super
+local p2_super
+-- local wasInMatch = false
+
+-- match state
+local match_initialized = false
+local p1_match_total_meter_gained = 0;
+local player_1_win_count = 0;
+local player_2_win_count = 0;
+-- local frameTimer = 0;
+-- local pressedStart = 0;
+-- local inputs = joypad.get();
+-- local previousMatchState = 9;
+-- local down_inputs -- used for checking if we reset in the 0 or 9  match state
 
 -- start=Start,Main RAM,eq,0x2867a,99,8
 -- player1=P1 Win,Main RAM,gts,0x16cd6,0,8
@@ -80,247 +100,6 @@ local previous_meter = 0; -- for some reason meter set to 70 on character select
 -- parry related
 
 -- print(match_timer)
-local stat_file
--- match related
-local p1_char
-local p2_char
-local p1_super
-local p2_super
--- local wasInMatch = false
-
--- match state
-local match_total_meter_gained = 0;
-local player_1_win_count = 0;
-local player_2_win_count = 0;
--- local frameTimer = 0;
--- local pressedStart = 0;
--- local inputs = joypad.get();
--- local previousMatchState = 9;
--- local down_inputs -- used for checking if we reset in the 0 or 9  match state
-local function hyper_reflector_rendering()
-    if GLOBAL_isHyperReflectorOnline then gui.text(10, 1, 'HYPER-REFLECTOR v0.2.2a', util_colors.gui.white, util_colors.input_history.unknown2) end
-    -- if GLOBAL_isHyperReflectorOnline then
-    --     gui.text(10, 1, 'memory stuff', util_colors.gui.white, util_colors.input_history.unknown2)
-    --     -- current guage int? we can use this to track how much meter the player has spent / gained
-    --     gui.text(20, 8, memory.readbyte(0x020695B5), util_colors.gui.white, util_colors.input_history.unknown2)
-    --     -- current meter count ie: a full number change on the ui?
-    --     gui.text(10, 8, memory.readbyte(0x020286AB), util_colors.gui.white, util_colors.input_history.unknown2)
-    --     -- current character p1
-    --     gui.text(50, 8, memory.readbyte(0x02011387), util_colors.gui.white, util_colors.input_history.unknown2)
-    --     gui.text(58, 8, memory.readbyte(0x02011388), util_colors.gui.white, util_colors.input_history.unknown2)
-    --     -- super art selected
-    --     gui.text(58, 20, memory.readbyte(0x0201138B), util_colors.gui.white, util_colors.input_history.unknown2)
-    --     -- combo count
-    --     gui.text(10, 20, memory.readbyte(0x020696C5), util_colors.gui.white, util_colors.input_history.unknown2)
-    -- end
-
-    -- gui.text(100, 20, game_name, util_colors.gui.white,
-    --          util_colors.input_history.unknown2)
-end
-
-local function check_in_match()
-    local match_state = memory.readbyte(0x020154A7);
-    -- print(match_state)
-    if match_state == 0 then -- need to mash to continues
-        -- down_inputs = joypad.getdown()
-        -- if down_inputs['Reset'] == true or down_inputs['Diagnostic'] == true then
-        --     pressedStart = 0
-        --     frameTimer = 0
-        -- end
-        -- this state indicates the game was reset
-        player_1_win_count = 0
-        player_2_win_count = 0
-        -- while frameTimer >= 2 and pressedStart <= 80 do
-        --     inputs['P1 Start'] = true
-        --     inputs['P2 Start'] = true
-        --     inputs['P1 Weak Punch'] = true
-        --     inputs['P2 Weak Punch'] = true
-        --     joypad.set(inputs)
-        --     frameTimer = 0
-        --     pressedStart = pressedStart + 1
-        -- end
-        -- frameTimer = frameTimer + 1
-        -- if not previousMatchState == 0 then
-        --     pressedStart = 0
-        --     previousMatchState = 0
-        -- end
-        return
-    end
-
-    if match_state == 7 then -- need to mash to continues
-        -- prevent start from being pressed
-        -- while frameTimer >= 2 and pressedStart <= 80 do
-        --     inputs['P1 Start'] = true
-        --     inputs['P2 Start'] = true
-        --     joypad.set(inputs)
-        --     frameTimer = 0
-        --     pressedStart = pressedStart + 1
-        -- end
-        -- frameTimer = frameTimer + 1
-        -- if not previousMatchState == 7 then
-        --     pressedStart = 0
-        --     previousMatchState = 7
-        -- end
-        return
-    end
-
-    if match_state == 8 then -- need to mash to continues
-        -- while frameTimer >= 2 do
-        --     inputs['P1 Start'] = true
-        --     inputs['P2 Start'] = true
-        --     joypad.set(inputs)
-        --     frameTimer = 0
-        --     pressedStart = pressedStart + 1
-        -- end
-        -- frameTimer = frameTimer + 1
-        -- if not previousMatchState == 8 then
-        --     pressedStart = 0
-        --     previousMatchState = 8
-        -- end
-        return
-    end
-
-    if match_state == 9 then -- this is initial char select
-        -- down_inputs = joypad.getdown()
-        -- if down_inputs['Reset'] == true or down_inputs['Diagnostic'] == true then
-        --     pressedStart = 0
-        --     frameTimer = 0
-        -- end
-        -- if not previousMatchState == 9 then
-        --     pressedStart = 0
-        --     previousMatchState = 9
-        -- end
-        return
-    end
-
-    -- at the start of a match
-    if match_state == 1 and stat_file == nil then
-        -- frameTimer = 0
-        -- wasInMatch = true
-        -- initialize all the values we want to write like character and super are
-        p1_char = memory.readbyte(0x02011387)
-        p2_char = memory.readbyte(0x02011388)
-        p1_super = memory.readbyte(0x020154D3)
-        p2_super = memory.readbyte(0x020154D5)
-        print(p1_char, '---', p2_char)
-        print(p1_super, '---', p2_super)
-        stat_file = io.open(match_track_file, "a")
-        -- if not previousMatchState == 1 then
-        --     pressedStart = 0
-        --     previousMatchState = 1
-        -- end
-        return
-    end
-
-    -- select stat logging
-    -- if match_state == 9 then
-    --     local character_select_state = memory.readbyte(0x02015545)
-    --     local character_select_row2 = memory.readbyte(0x020154D1)
-    --     local character_select_col2 = memory.readbyte(0x0201566D)
-    --     print('char select stat p2', character_select_state)
-    --     print('match state', match_state)
-    --     print('p2 row', character_select_row2)
-    --     print('p2 col', character_select_col2)
-    -- end
-    -- takes us to character select screen
-    -- set by column maybe?
-    -- reload match
-    -- if match_state == 9 and wasInMatch then
-    --     -- -- TODO I want to be able to write the previos scores and the grade to memory, for fun
-    --     -- module_character_select.start_character_select_sequence()
-    --     -- local p1_wins = memory.readdword(0x02016cd6)
-    --     -- local p2_wins = memory.readdword(0x02016cd4)
-    --     -- player_1_win_count = p1_wins
-    --     -- player_2_win_count = p2_wins
-    --     -- wasInMatch = false
-    -- end
-    -- gamestate_read() -- read game state every frame.
-    -- previousMatchState = 2
-    -- pressedStart = 0
-    return match_state == 2
-end
-
-local function check_wins()
-    local p1_wins = memory.readdword(0x02016cd6)
-    local p2_wins = memory.readdword(0x02016cd4)
-    if p1_wins > player_1_win_count and p1_wins < 100 then
-        -- reset opponent win count
-        player_2_win_count = 0
-        print('player 1 win')
-        if stat_file then
-            stat_file:write('\n player1:')
-            stat_file:write('\n player1-char:')
-            stat_file:write(p1_char)
-            stat_file:write('\n player1-super:')
-            stat_file:write(p1_super)
-            stat_file:write('\n player2-char:')
-            stat_file:write(p2_char)
-            stat_file:write('\n player2-super:')
-            stat_file:write(p2_super)
-            stat_file:write('\n p1-win:true')
-            stat_file:close()
-            stat_file = nil
-            -- 0x0201553D
-            local front_end_reader = io.open(ext_command_file, "w")
-            if front_end_reader then
-                front_end_reader:write('read-tracking-file')
-                front_end_reader:close()
-            end
-        end
-        -- TODO change this back once we can write the score back to memory
-        player_1_win_count = player_1_win_count + 1
-    end
-    if p2_wins > player_2_win_count and p2_wins < 100 then
-        -- reset opponent win count
-        player_1_win_count = 0
-        print('player 2 win')
-        if stat_file then
-            stat_file:write('\n player1-char:')
-            stat_file:write(p1_char)
-            stat_file:write('\n player1-super:')
-            stat_file:write(p1_super)
-            stat_file:write('\n player2-char:')
-            stat_file:write(p2_char)
-            stat_file:write('\n player2-super:')
-            stat_file:write(p2_super)
-            stat_file:write('\n p2-win:true')
-            stat_file:close()
-            stat_file = nil
-            local front_end_reader = io.open(ext_command_file, "w")
-            if front_end_reader then
-                front_end_reader:write('read-tracking-file')
-                front_end_reader:close()
-            end
-        end
-        -- TODO change this back once we can write the score back to memory
-        player_2_win_count = player_2_win_count + 1
-    end
-end
-
--- Lua writes current stat tracking to a text file here
-function GLOBAL_read_stat_memory()
-    -- if joypad.getdown('Reset') then print(' resetting match', ) end
-    check_wins()
-    -- make sure we are in a match before we read / write to the file.
-    if not check_in_match() then return end
-    -- player 1 meter tracking
-    local current_meter = memory.readbyte(0x020695B5)
-    -- file open to write
-    if stat_file then
-        if current_meter <= previous_meter then previous_meter = current_meter end
-        local meter_gained = current_meter - previous_meter
-        if meter_gained > 0 then -- compare our meters
-            print(meter_gained)
-            print(previous_meter, current_meter)
-            match_total_meter_gained = match_total_meter_gained + meter_gained
-            previous_meter = current_meter
-            stat_file:write('\n p1-meter-gained:')
-            stat_file:write(match_total_meter_gained)
-            stat_file:write('\n p1-total-meter-gained:')
-            stat_file:write(match_total_meter_gained)
-        end
-    end
-end
 
 -- ELECTRON sends commands here, lua reads them and then then sends ifno back via text file
 -- local function check_commands()
@@ -366,7 +145,170 @@ end
 --     end
 -- end
 
--- We write to the stat tracking file here
+-- if character select state = 5 we know p2 has already been selected, so we want both of p2 and p1 to = 1 before we start a match
+-- print(character_select_state)
+-- print(match_state)
+-- print(memory.readbyte(0x020154CF)) -- 0 to 6 -- character row
+-- print(memory.readbyte(0x0201566B)) -- 0 to 2 -- character column
+-- -- -- p2
+-- print('p2', memory.readbyte(0x020154D1)) -- 0 to 6 -- character row
+-- print(memory.readbyte(0x0201566D)) -- 0 to 2 -- character column
+
+local function hyper_reflector_rendering()
+    if GLOBAL_isHyperReflectorOnline then gui.text(2, 2, 'HYPER-REFLECTOR v0.2.3a', util_colors.gui.empty) end
+    -- if GLOBAL_isHyperReflectorOnline then
+    --     gui.text(10, 1, 'memory stuff', util_colors.gui.white, util_colors.input_history.unknown2)
+    --     -- current guage int? we can use this to track how much meter the player has spent / gained
+    --     gui.text(20, 8, memory.readbyte(0x020695B5), util_colors.gui.white, util_colors.input_history.unknown2)
+    --     -- current meter count ie: a full number change on the ui?
+    --     gui.text(10, 8, memory.readbyte(0x020286AB), util_colors.gui.white, util_colors.input_history.unknown2)
+    --     -- current character p1
+    --     gui.text(50, 8, memory.readbyte(0x02011387), util_colors.gui.white, util_colors.input_history.unknown2)
+    --     gui.text(58, 8, memory.readbyte(0x02011388), util_colors.gui.white, util_colors.input_history.unknown2)
+    --     -- super art selected
+    --     gui.text(58, 20, memory.readbyte(0x0201138B), util_colors.gui.white, util_colors.input_history.unknown2)
+    --     -- combo count
+    --     gui.text(10, 20, memory.readbyte(0x020696C5), util_colors.gui.white, util_colors.input_history.unknown2)
+    -- end
+
+    -- gui.text(100, 20, game_name, util_colors.gui.white,
+    --          util_colors.input_history.unknown2)
+end
+
+local function check_in_match()
+    local character_select_state = memory.readbyte(0x02015545)
+    local match_state = memory.readbyte(0x020154A7);
+    -- print(match_state)
+    -- 
+    -- if match_state == 0 then -- this indicates the emulator was restarted in some way
+    --     player_1_win_count = 0
+    --     player_2_win_count = 0
+    --     return
+    -- end
+
+    if character_select_state == 4 and not match_initialized and stat_file == nil then -- this is initial char select and the select state has been reset
+        match_just_ended = false
+        local p1_wins = memory.readdword(0x02016cd6)
+        local p2_wins = memory.readdword(0x02016cd4)
+        player_1_win_count = p1_wins
+        player_2_win_count = p2_wins
+        -- print('match was reset correctly')
+        io.open(match_track_file, "w"):close()
+        p1_char = memory.readbyte(0x02011387)
+        p2_char = memory.readbyte(0x02011388)
+        p1_super = memory.readbyte(0x020154D3)
+        p2_super = memory.readbyte(0x020154D5)
+        -- print(p1_char, '---', p2_char)
+        -- print(p1_super, '---', p2_super)
+        stat_file = io.open(match_track_file, "a")
+        if stat_file then
+            stat_file:write('\n -i-game-match', match_count) -- is not registered until the end of the set
+        end
+        match_initialized = true
+        return
+    end
+
+    if match_state == 6 then p1_previous_meter = 0 end
+
+    if match_state == 7 then return 7 end
+    if match_state == 2 then return 2 end
+end
+
+local function check_wins()
+    local p1_wins = memory.readdword(0x02016cd6)
+    local p2_wins = memory.readdword(0x02016cd4)
+
+    if p1_wins > player_1_win_count and p1_wins < 100 then
+        -- print(p1_wins)
+        -- print(player_1_win_count)
+        -- reset opponent win count
+        player_2_win_count = 0
+        -- print('player 1 win')
+        if stat_file then
+            stat_file:write('\n player1:')
+            stat_file:write('\n player1-char:')
+            stat_file:write(p1_char)
+            stat_file:write('\n player1-super:')
+            stat_file:write(p1_super)
+            stat_file:write('\n player2-char:')
+            stat_file:write(p2_char)
+            stat_file:write('\n player2-super:')
+            stat_file:write(p2_super)
+            stat_file:write('\n p1-win:true')
+        end
+        -- TODO change this back once we can write the score back to memory
+        player_1_win_count = p1_wins
+        match_just_ended = true
+    end
+
+    if p2_wins > player_2_win_count and p2_wins < 100 then
+        -- reset opponent win count
+        player_1_win_count = 0
+        -- print('player 2 win')
+        if stat_file then
+            stat_file:write('\n player1-char:')
+            stat_file:write(p1_char)
+            stat_file:write('\n player1-super:')
+            stat_file:write(p1_super)
+            stat_file:write('\n player2-char:')
+            stat_file:write(p2_char)
+            stat_file:write('\n player2-super:')
+            stat_file:write(p2_super)
+            stat_file:write('\n p2-win:true')
+        end
+        -- TODO change this back once we can write the score back to memory
+        player_2_win_count = player_2_win_count + 1
+        match_just_ended = true
+    end
+end
+
+-- Lua writes current stat tracking to a text file here
+function GLOBAL_read_stat_memory()
+    -- print(match_just_ended)
+
+    local match_state_key = check_in_match()
+    -- print(match_state_key)
+    if stat_file then
+        if match_state_key == 2 then
+
+            local p1_current_meter = memory.readbyte(0x020695B5)
+            -- print('current', p1_current_meter)
+            if p1_current_meter <= p1_previous_meter then p1_previous_meter = p1_current_meter end
+
+            local p1_meter_gained = p1_current_meter - p1_previous_meter
+            if p1_meter_gained > 0 then
+
+                -- print('gained', p1_meter_gained)
+                p1_match_total_meter_gained = p1_match_total_meter_gained + p1_meter_gained
+                p1_previous_meter = p1_current_meter
+
+                stat_file:write('\n p1-meter-gained:')
+                stat_file:write(p1_meter_gained)
+                stat_file:write('\n p1-total-meter-gained:')
+                stat_file:write(p1_match_total_meter_gained)
+            end
+        end
+
+        if match_just_ended and match_state_key == 7 then
+            -- print('resetting all state')
+            p1_match_total_meter_gained = 0
+            p1_previous_meter = 0
+            match_count = match_count + 1
+            match_initialized = false
+            print('Closing file one frame late to capture final meter.')
+            stat_file:close()
+            stat_file = nil
+            local front_end_reader = io.open(ext_command_file, "w")
+            if front_end_reader then
+                front_end_reader:write('read-tracking-file')
+                front_end_reader:close()
+            end
+        end
+
+        if match_state_key == 7 then check_wins() end
+    end
+end
+
 local function game_closing()
     local stat_file = io.open(match_track_file, "a")
     if stat_file then
@@ -383,13 +325,11 @@ local function game_starting()
     local stat_file = io.open(match_track_file, "a")
     if stat_file then
         stat_file:write('')
-        stat_file:write('\n -i-game-started:1')
+        stat_file:write('\n -i-game-started')
         stat_file:close()
     end
     module_character_select.start_character_select_sequence()
 end
-
--- hyper-reflector commands -- this is actually global state
 
 emu.registerstart(game_starting)
 emu.registerexit(game_closing)
