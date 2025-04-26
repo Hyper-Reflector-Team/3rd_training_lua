@@ -190,8 +190,16 @@ local function check_in_match()
         match_just_ended = false
         local p1_wins = memory.readdword(0x02016cd6)
         local p2_wins = memory.readdword(0x02016cd4)
-        player_1_win_count = p1_wins
-        player_2_win_count = p2_wins
+        if (p1_wins < 100) then -- rolls over at 99 but if not its like 65535 or something
+            player_1_win_count = p1_wins
+        else
+            player_1_win_count = 0
+        end
+        if (p2_wins < 100) then -- rolls over at 99 but if not its like 65535 or something
+            player_2_win_count = p2_wins
+        else
+            player_2_win_count = 0
+        end
         -- print('match was reset correctly')
         io.open(match_track_file, "w"):close()
         stat_file = io.open(match_track_file, "a")
@@ -221,6 +229,8 @@ local function check_wins()
     local p1_wins = memory.readdword(0x02016cd6)
     local p2_wins = memory.readdword(0x02016cd4)
 
+    -- print('player 1 wins', p1_wins)
+    -- print('player 1 win count', player_1_win_count)
     if p1_wins > player_1_win_count and p1_wins < 100 then
         -- print(p1_wins)
         -- print(player_1_win_count)
@@ -240,10 +250,16 @@ local function check_wins()
             stat_file:write('\n p1-win:true')
         end
         -- TODO change this back once we can write the score back to memory
-        player_1_win_count = p1_wins
+        if (p1_wins < 100) then -- rolls over at 99 but if not its like 65535 or something
+            player_1_win_count = p1_wins
+        else
+            player_1_win_count = 0
+        end
         match_just_ended = true
     end
 
+    -- print('player 2 wins', p2_wins)
+    -- print('player 2 win count', player_2_win_count)
     if p2_wins > player_2_win_count and p2_wins < 100 then
         -- reset opponent win count
         player_1_win_count = 0
@@ -260,7 +276,10 @@ local function check_wins()
             stat_file:write('\n p2-win:true')
         end
         -- TODO change this back once we can write the score back to memory
-        player_2_win_count = player_2_win_count + 1
+        if (p2_wins < 100) then -- rolls over at 99 but if not its like 65535 or something
+            player_2_win_count = p2_wins
+        end
+        if (p2_wins > 100) then player_2_win_count = 0 end
         match_just_ended = true
     end
 end
