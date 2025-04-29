@@ -1832,8 +1832,11 @@ function on_start()
 end
 
 function hotkey1()
-    set_recording_state({}, 1)
-    module_character_select.start_character_select_sequence()
+    if not GLOBAL_isHyperReflectorOnline then
+        set_recording_state({}, 1)
+        module_character_select.start_character_select_sequence()
+    end
+
 end
 
 function hotkey2() if module_character_select.character_select_sequence_state ~= 0 then module_character_select.select_gill() end end
