@@ -30,6 +30,9 @@ local match_initialized = false
 local p1_match_total_meter_gained = 0;
 local player_1_win_count = 0;
 local player_2_win_count = 0;
+local player_1_total_wins = 0; -- just used for display for now.
+local player_2_total_wins = 0;
+local data_reset = false; -- this is used to track when we should reset data for wins
 -- local frameTimer = 0;
 -- local pressedStart = 0;
 -- local inputs = joypad.get();
@@ -155,7 +158,12 @@ local player_2_win_count = 0;
 -- print(memory.readbyte(0x0201566D)) -- 0 to 2 -- character column
 
 local function hyper_reflector_rendering()
-    if GLOBAL_isHyperReflectorOnline then gui.text(2, 2, 'HYPER-REFLECTOR v0.2.3a', util_colors.gui.empty) end
+    if GLOBAL_isHyperReflectorOnline then
+        gui.text(160, 4, player_1_total_wins, util_colors.input_history.unknown1)
+        gui.text(221, 4, player_2_total_wins, util_colors.input_history.unknown1)
+        gui.text(2, 2, 'HYPER-REFLECTOR v030a', util_colors.gui.empty)
+
+    end
     -- if GLOBAL_isHyperReflectorOnline then
     --     gui.text(10, 1, 'memory stuff', util_colors.gui.white, util_colors.input_history.unknown2)
     --     -- current guage int? we can use this to track how much meter the player has spent / gained
@@ -188,7 +196,18 @@ local function check_in_match()
 
     if character_select_state == 4 and not match_initialized and stat_file == nil then -- this is initial char select and the select state has been reset
         match_just_ended = false
+        local new_p1_wins = memory.writedword(0x02016cd6, 0)
+        local new_p2_wins = memory.writedword(0x02016cd4, 0)
+        print(new_p1_wins)
+        -- print('match was reset correctly')
+        io.open(match_track_file, "w"):close()
+        stat_file = io.open(match_track_file, "a")
+        if stat_file then
+            stat_file:write('\n -i-game-match', match_count) -- is not registered until the end of the set
+        end
+        print('resetting data')
         local p1_wins = memory.readdword(0x02016cd6)
+        print(p1_wins)
         local p2_wins = memory.readdword(0x02016cd4)
         if (p1_wins < 100) then -- rolls over at 99 but if not its like 65535 or something
             player_1_win_count = p1_wins
@@ -200,12 +219,7 @@ local function check_in_match()
         else
             player_2_win_count = 0
         end
-        -- print('match was reset correctly')
-        io.open(match_track_file, "w"):close()
-        stat_file = io.open(match_track_file, "a")
-        if stat_file then
-            stat_file:write('\n -i-game-match', match_count) -- is not registered until the end of the set
-        end
+        p1_previous_meter = 0
         match_initialized = true
         return
     end
@@ -218,9 +232,9 @@ local function check_in_match()
         -- print(p1_char, '---', p2_char)
         -- print(p1_super, '---', p2_super)
     end
-
-    if match_state == 6 then p1_previous_meter = 0 end
-
+    -- local byterange = memory.readbyterange(0x02011388, 12)
+    -- local test = memory.readdword(0x02011388)
+    -- print(byterange)
     if match_state == 7 then return 7 end
     if match_state == 2 then return 2 end
 end
@@ -228,13 +242,11 @@ end
 local function check_wins()
     local p1_wins = memory.readdword(0x02016cd6)
     local p2_wins = memory.readdword(0x02016cd4)
+    print('p1 ', p1_wins, player_1_win_count)
+    print('p2 ', p2_wins, player_2_win_count)
 
-    -- print('player 1 wins', p1_wins)
-    -- print('player 1 win count', player_1_win_count)
     if p1_wins > player_1_win_count and p1_wins < 100 then
-        -- print(p1_wins)
-        -- print(player_1_win_count)
-        -- reset opponent win count
+        player_1_total_wins = player_1_total_wins + 1
         player_2_win_count = 0
         -- print('player 1 win')
         if stat_file then
@@ -249,7 +261,6 @@ local function check_wins()
             stat_file:write(p2_super)
             stat_file:write('\n p1-win:true')
         end
-        -- TODO change this back once we can write the score back to memory
         if (p1_wins < 100) then -- rolls over at 99 but if not its like 65535 or something
             player_1_win_count = p1_wins
         else
@@ -258,9 +269,8 @@ local function check_wins()
         match_just_ended = true
     end
 
-    -- print('player 2 wins', p2_wins)
-    -- print('player 2 win count', player_2_win_count)
     if p2_wins > player_2_win_count and p2_wins < 100 then
+        player_2_total_wins = player_2_total_wins + 1
         -- reset opponent win count
         player_1_win_count = 0
         -- print('player 2 win')
@@ -278,8 +288,9 @@ local function check_wins()
         -- TODO change this back once we can write the score back to memory
         if (p2_wins < 100) then -- rolls over at 99 but if not its like 65535 or something
             player_2_win_count = p2_wins
+        else
+            player_2_win_count = 0
         end
-        if (p2_wins > 100) then player_2_win_count = 0 end
         match_just_ended = true
     end
 end
