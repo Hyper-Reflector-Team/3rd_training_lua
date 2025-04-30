@@ -14,7 +14,7 @@ require("src/gamestate")
 
 -- state
 local game_name = ""
-local p1_previous_meter = 0; -- for some reason meter set to 70 on character select 
+
 local match_count = 0;
 local stat_file
 -- match related
@@ -27,7 +27,22 @@ local p2_super
 
 -- match state
 local match_initialized = false
+---- meter
+local p1_previous_meter = 0; -- for some reason meter set to 70 on character select 
 local p1_match_total_meter_gained = 0;
+local p2_previous_meter = 0; -- for some reason meter set to 70 on character select 
+local p2_match_total_meter_gained = 0;
+----
+---- hits
+local p2_hits_landed_normals = 0
+local p2_hits_landed_specials = 0
+local p2_hits_landed_supers = 0
+local p2_hits_landed_supers_ext = 0
+local p1_hits_landed_normals = 0
+local p1_hits_landed_specials = 0
+local p1_hits_landed_supers = 0
+local p1_hits_landed_supers_ext = 0
+----
 local player_1_win_count = 0;
 local player_2_win_count = 0;
 local player_1_total_wins = 0; -- just used for display for now.
@@ -198,7 +213,7 @@ local function check_in_match()
         match_just_ended = false
         local new_p1_wins = memory.writedword(0x02016cd6, 0)
         local new_p2_wins = memory.writedword(0x02016cd4, 0)
-        print(new_p1_wins)
+        print(new_p1_wins, new_p2_wins)
         -- print('match was reset correctly')
         io.open(match_track_file, "w"):close()
         stat_file = io.open(match_track_file, "a")
@@ -220,6 +235,7 @@ local function check_in_match()
             player_2_win_count = 0
         end
         p1_previous_meter = 0
+        p2_previous_meter = 0
         match_initialized = true
         return
     end
@@ -295,23 +311,36 @@ local function check_wins()
     end
 end
 
+local function check_getting_hit()
+    local p2_hit_by_normal = memory.readbyte(0x02028861)
+    local p2_hit_by_special = memory.readbyte(0x02028863)
+    -- local p2_hits_landed_normals = 0
+    -- local p2_hits_landed_specials = 0
+    -- local p2_hits_landed_supers = 0
+    -- local p2_hits_landed_supers_ext = 0
+    -- local p1_hits_landed_normals = 0
+    -- local p1_hits_landed_specials = 0
+    -- local p1_hits_landed_supers = 0
+    -- local p1_hits_landed_supers_ext = 0
+    -- print('p2 hit n', p2_hit_by_normal)
+    -- print('p2 hit s', p2_hit_by_special)
+end
+
 -- Lua writes current stat tracking to a text file here
 function GLOBAL_read_stat_memory()
-    -- print(match_just_ended)
-
     local match_state_key = check_in_match()
-    -- print(match_state_key)
     if stat_file then
         if match_state_key == 2 then
 
             local p1_current_meter = memory.readbyte(0x020695B5)
-            -- print('current', p1_current_meter)
+            local p2_current_meter = memory.readbyte(0x020695E1)
+
             if p1_current_meter <= p1_previous_meter then p1_previous_meter = p1_current_meter end
+            if p2_current_meter <= p2_previous_meter then p2_previous_meter = p2_current_meter end
 
             local p1_meter_gained = p1_current_meter - p1_previous_meter
+            local p2_meter_gained = p2_current_meter - p2_previous_meter
             if p1_meter_gained > 0 then
-
-                -- print('gained', p1_meter_gained)
                 p1_match_total_meter_gained = p1_match_total_meter_gained + p1_meter_gained
                 p1_previous_meter = p1_current_meter
 
@@ -320,12 +349,23 @@ function GLOBAL_read_stat_memory()
                 stat_file:write('\n p1-total-meter-gained:')
                 stat_file:write(p1_match_total_meter_gained)
             end
+            if p2_meter_gained > 0 then
+                p2_match_total_meter_gained = p2_match_total_meter_gained + p2_meter_gained
+                p2_previous_meter = p2_current_meter
+
+                stat_file:write('\n p2-meter-gained:')
+                stat_file:write(p2_meter_gained)
+                stat_file:write('\n p2-total-meter-gained:')
+                stat_file:write(p2_match_total_meter_gained)
+            end
         end
 
         if match_just_ended and match_state_key == 7 then
             -- print('resetting all state')
             p1_match_total_meter_gained = 0
             p1_previous_meter = 0
+            p2_match_total_meter_gained = 0
+            p2_previous_meter = 0
             match_count = match_count + 1
             match_initialized = false
             print('Closing file one frame late to capture final meter.')
