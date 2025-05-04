@@ -2089,14 +2089,16 @@ function on_gui()
         -- input history
         if training_settings.display_p1_input_history_dynamic and training_settings.display_p1_input_history then
             if player_objects[1].pos_x < 320 then
-                module_input_history.input_history_draw(module_input_history.input_history[1], screen_width - 4, 49, true)
+                module_input_history.input_history_draw(module_input_history.input_history[1], emu.screenwidth() - 4, 49, true)
             else
                 module_input_history.input_history_draw(module_input_history.input_history[1], 4, 49, false)
             end
         else
             if training_settings.display_p1_input_history then module_input_history.input_history_draw(module_input_history.input_history[1], 4, 49, false) end
             -- TODO fix below code
-            if training_settings.display_p2_input_history then module_input_history.input_history_draw(module_input_history.input_history[2], screen_width - 4, 49, true) end
+            if training_settings.display_p2_input_history then
+                module_input_history.input_history_draw(module_input_history.input_history[2], emu.screenwidth() - 4, 49, true)
+            end
         end
 
         -- controllers
