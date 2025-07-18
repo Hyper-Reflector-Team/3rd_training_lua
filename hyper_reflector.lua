@@ -177,7 +177,6 @@ local function hyper_reflector_rendering()
         gui.text(160, 4, player_1_total_wins, util_colors.input_history.unknown1)
         gui.text(221, 4, player_2_total_wins, util_colors.input_history.unknown1)
         gui.text(2, 2, 'HYPER-REFLECTOR v030a', util_colors.gui.empty)
-
     end
     -- if GLOBAL_isHyperReflectorOnline then
     --     gui.text(10, 1, 'memory stuff', util_colors.gui.white, util_colors.input_history.unknown2)
