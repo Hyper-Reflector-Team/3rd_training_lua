@@ -1,3 +1,146 @@
 -- this will change the character on p2 to alex, BUT it only initializes after round end or start interesting stuff
 memory.writebyte(0x02011388, 1)
 -- 2011387 for p2
+
+-- from the old file
+-- local frameTimer = 0;
+-- local pressedStart = 0;
+-- local inputs = joypad.get();
+-- local previousMatchState = 9;
+-- local down_inputs -- used for checking if we reset in the 0 or 9  match state
+
+-- start=Start,Main RAM,eq,0x2867a,99,8
+-- player1=P1 Win,Main RAM,gts,0x16cd6,0,8
+-- player2=P2 Win,Main RAM,gts,0x16cd4,0,8
+-- char1=P1 Char,Main RAM,char,0x11384,0,8
+-- char2=P2 Char,Main RAM,char,0x1138b,0,8
+-- char=1,Alex
+-- char=2,Ryu
+-- char=3,Yun
+-- char=4,Dudley
+-- char=5,Necro
+-- char=6,Hugo
+-- char=7,Ibuki
+-- char=8,Elena
+-- char=9,Oro
+-- char=10,Yang
+-- char=11,Ken
+-- char=12,Sean
+-- char=13,Urien
+-- char=14,Akuma
+-- char=16,Chun-Li
+-- char=17,Makoto
+-- char=18,Q
+-- char=19,Twelve
+-- char=20,Remy
+-- wow we can character lock the menu!
+-- p1
+-- memory.writebyte(0x020154CF, 0x04) -- 0 to 6 -- character row
+-- memory.writebyte(0x0201566B, 0x01) -- 0 to 2 -- character column
+-- -- p2
+-- memory.writebyte(0x020154D1, 0x06) -- 0 to 6 -- character row
+-- memory.writebyte(0x0201566D, 0x01) -- 0 to 2 -- character column
+-- 
+
+-- print(match_state)
+-- 6 is post last hit
+-- 8 is transition from win to black screen
+-- 1 is pre match freeze state
+-- 2 is in fight
+
+-- memory addresses 
+-- 0x2867a == start ? maybe timer?
+-- working player win count memory
+-- local p1_win = memory.readdword(0x02016cd6)
+-- local p2_win = memory.readdword(0x02016cd4)
+-- if either are the value 65536 i believe this means the other lost a streak
+-- print(p1_win)
+-- local start = memory.readbyte(0x0202867a) -- doesnt work, came from the the detectors code
+
+-- character_select_row = 0x020154D1,
+-- character_select_col = 0x0201566D,
+-- character_select_sa = 0x020154D5,
+-- character_select_color = 0x02015684,
+-- character_select_state = 0x02015545,
+-- character_select_id = 0x02011388,
+
+-- timers
+-- working match timer
+-- match_timer = memory.readbyte(0x02011377)
+-- working char select timer
+-- local char_select_timer = memory.readbyte(0x020154FB)
+
+-- parry related
+
+-- print(match_timer)
+
+-- ELECTRON sends commands here, lua reads them and then then sends ifno back via text file
+-- local function check_commands()
+--     GLOBAL_read_stat_memory()
+--     local file = io.open(command_file, "r")
+--     if file then
+--         local command = file:read("*l") -- Read first line
+--         file:close()
+
+--         if command == "game_name" then
+--             local value = emu.romname()
+--             memory.writebyte(0x02011388, 1) -- change p2 to alex
+--             -- memory.writebyte(0x02011377, 1) -- immediately end round
+--             memory.writeword(0x0201138B, 0x00) -- select super art 
+--             -- read from the current lua file and make a return an answer to the ext_command_file maybe better to have another file for commands sent to electron.
+--             local file2 = io.open(ext_command_file, "w")
+--             if file2 then
+--                 file2:write(value)
+--                 file2:close()
+--             end
+--             print('The game is: ', value)
+--         elseif command == "resume" then
+--             local value = emu.sourcename()
+--             -- read from the current lua file and make a return an answer to the ext_command_file.txt maybe better to have another file for commands sent to electron.
+--             local file2 = io.open(ext_command_file, "w")
+--             if file2 then
+--                 file2:write(value)
+--                 file2:close()
+--             end
+--         elseif command and string.find(command, "textinput:") then
+--             game_name = string.sub(command, 11) -- cut the first 11 characters from string
+--             -- read from the current lua file and make a return an answer to fbneo_commands_commands.txt maybe better to have another file for commands sent to electron.
+--             local file2 = io.open(ext_command_file, "w")
+--             if file2 then
+--                 file2:write('we wrote to game')
+--                 file2:close()
+--             end
+--         elseif command == "exit" then
+--             os.exit()
+--         end
+--         -- Clear the file after each input. If you want both clients running locally to read this file, without a deletion race condition, disable the below line, but keep in mind that the commands will happen every frame.
+--         io.open(command_file, "w"):close()
+--     end
+-- end
+
+-- if character select state = 5 we know p2 has already been selected, so we want both of p2 and p1 to = 1 before we start a match
+-- print(character_select_state)
+-- print(match_state)
+-- print(memory.readbyte(0x020154CF)) -- 0 to 6 -- character row
+-- print(memory.readbyte(0x0201566B)) -- 0 to 2 -- character column
+-- -- -- p2
+-- print('p2', memory.readbyte(0x020154D1)) -- 0 to 6 -- character row
+-- print(memory.readbyte(0x0201566D)) -- 0 to 2 -- character column
+
+-- if GLOBAL_isHyperReflectorOnline then
+--     gui.text(10, 1, 'memory stuff', util_colors.gui.white, util_colors.input_history.unknown2)
+--     -- current guage int? we can use this to track how much meter the player has spent / gained
+--     gui.text(20, 8, memory.readbyte(0x020695B5), util_colors.gui.white, util_colors.input_history.unknown2)
+--     -- current meter count ie: a full number change on the ui?
+--     gui.text(10, 8, memory.readbyte(0x020286AB), util_colors.gui.white, util_colors.input_history.unknown2)
+--     -- current character p1
+--     gui.text(50, 8, memory.readbyte(0x02011387), util_colors.gui.white, util_colors.input_history.unknown2)
+--     gui.text(58, 8, memory.readbyte(0x02011388), util_colors.gui.white, util_colors.input_history.unknown2)
+--     -- super art selected
+--     gui.text(58, 20, memory.readbyte(0x0201138B), util_colors.gui.white, util_colors.input_history.unknown2)
+--     -- combo count
+--     gui.text(10, 20, memory.readbyte(0x020696C5), util_colors.gui.white, util_colors.input_history.unknown2)
+-- end
+
+-- gui.text(100, 20, game_name, util_colors.gui.white,
+--          util_colors.input_history.unknown2)
