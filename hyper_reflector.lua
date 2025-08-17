@@ -12,10 +12,16 @@ local module_character_select = require("src/modules/character_select")
 -- game state 
 require("src/gamestate")
 
+math.randomseed(os.time())
+
+local function unique_id() return tostring(os.time()) .. tostring(math.random(100000, 999999)) end
+
 -- state
 local game_name = ""
-
+local last_known_match_uuid = '';
+local match_uuid = '';
 local match_count = 0;
+local total_match_count = 0;
 local stat_file
 -- match related
 local match_just_ended = false
@@ -76,6 +82,7 @@ local function check_in_match()
     --     return
     -- end
 
+    -- initialize a match
     if character_select_state == 4 and not match_initialized and stat_file == nil then -- this is initial char select and the select state has been reset
         has_match_transitioned = false
         match_just_ended = false
@@ -83,7 +90,11 @@ local function check_in_match()
         io.open(match_track_file, "w"):close()
         stat_file = io.open(match_track_file, "a")
         if stat_file then
+            match_uuid = unique_id()
             stat_file:write('\n -i-game-match', match_count) -- is not registered until the end of the set
+            stat_file:write('\n match-uuid:')
+            stat_file:write(match_uuid)
+
         end
         print('resetting data')
 
@@ -271,9 +282,13 @@ function GLOBAL_read_stat_memory()
                 check_wins_frame_delay = check_wins_frame_delay - 1
                 if check_wins_frame_delay == 0 then
                     print("Executing delayed check_wins after frame delay")
-                    check_wins()
-                    check_wins_frame_delay = -1
-                    waiting_to_check_win = false
+                    -- tilda is for not matching
+                    if match_uuid ~= last_known_match_uuid then
+                        check_wins()
+                        check_wins_frame_delay = -1
+                        waiting_to_check_win = false
+                        last_known_match_uuid = match_uuid
+                    end
                 end
             end
 
@@ -285,6 +300,7 @@ function GLOBAL_read_stat_memory()
                 p2_match_total_meter_gained = 0
                 p2_previous_meter = 0
                 match_count = match_count + 1
+                total_match_count = total_match_count + 1
                 match_initialized = false
                 print('Closing file one frame late to capture final meter.')
                 stat_file:close()
